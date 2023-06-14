@@ -171,12 +171,16 @@ export class Bot implements Runnable {
 				}
 			  );
 	  
-			  // Update the conversation history for subsequent requests
-			  this.conversationHistory.set(channelId, response.data.choices[0].message.content);
-	  
-			  // Send the response message and delete the thinking message
-			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
-			  thinkingMessage.delete();
+			  // Extract the response message content and push it to the conversation array
+				const responseContent = response.data.choices[0].message.content;
+				conversation.push({ role: 'bot', content: responseContent });
+
+				// Update the conversation history for subsequent requests
+				this.conversationHistory.set(channelId, conversation);
+
+				// Send the response message and delete the thinking message
+				await message.channel.send(`${message.author.toString()} ${responseContent}`);
+				thinkingMessage.delete();
 			} catch (error: any) {
 			  message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
 			  thinkingMessage.delete();
