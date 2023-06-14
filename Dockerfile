@@ -11,6 +11,7 @@ ENV OPENAI_ORGANIZATION_ID=$OPENAI_ORGANIZATION_ID
 ENV OPENAI_API_KEY=$OPENAI_API_KEY
 ENV MODEL_NAME=$MODEL_NAME
 
+RUN yarn add --dev @types/uuid
 COPY yarn.lock ./
 COPY package*.json ./
 COPY tsconfig*.json ./
