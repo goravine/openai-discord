@@ -72,7 +72,7 @@ export class Api implements AI, Runnable {
       this.conversationId = 'AT-CHAT-'+ Date.now() + '';
     }
     try {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions/'+this.conversationId, {
+      const response = await axios.post('https://api.openai.com/v1/chat/completions/', {
         model: process.env.MODEL_NAME,
         messages: chatHistory,
         max_tokens: 1024, // Adjust the maximum number of tokens per request
@@ -82,7 +82,8 @@ export class Api implements AI, Runnable {
       }, {
         headers: {
           'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+		  'Conversation-ID': this.conversationId,
         }
       });
 
