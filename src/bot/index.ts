@@ -54,8 +54,9 @@ export class Bot implements Runnable {
     });
   }
 
-  // Define a conversation ID map
-  public conversationIds = new Map<string, string>();
+	// Define a conversation ID map
+	public conversationHistory = new Map<string, Array<{ role: string, content: string }>>();
+
 
   /**
    * Handle slash commands from Discord API
@@ -130,71 +131,58 @@ export class Bot implements Runnable {
     /**
      *  On interaction create event handler
      */
-    this._client.on('interactionCreate', async (interaction: Interaction) => {
-      /**
-       * Check if interaction is command or chat input command
-       */
-      if (interaction.isCommand() || interaction.isChatInputCommand()) {
-        await this.handleSlashCommand(interaction); // Handle slash command
-      }
-    });
-
-	this._client.on('messageCreate', async (message: any) => {
-	// Check if the bot is mentioned in the message
-	if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
-		// Remove the bot's mention from the message content
-		const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
-		// Check if there is any remaining content after removing the mention
-		if (messageContent) {
-		// Retrieve or generate a conversation ID based on the message's channel ID
-		const channelId = message.channel.id;
-		let conversationId = this.conversationIds.get(channelId);
-		if (!conversationId) {
-			conversationId = `AT-CHAT-${Date.now()}`;
-			this.conversationIds.set(channelId, conversationId);
-		}
-
-		// Create an array of message objects
-		const messages = [
-			{ role: 'system', content: 'You are a user' },
-			{ role: 'user', content: messageContent }
-		];
-
-		// Send the loading message
-		const thinkingMessage = await message.channel.send('Thinking...');
-
-		try {
-			const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-			model: process.env.MODEL_NAME,
-			messages: messages,
-			max_tokens: 1024, // Adjust the maximum number of tokens per request
-			temperature: 0.5, // Adjust the temperature for response generation
-			frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
-			presence_penalty: 0.4, // Adjust the presence penalty for response generation
-			}, {
-			headers: {
-				'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-				'Content-Type': 'application/json',
-				'Conversation-ID': conversationId,
+    this._client.on('messageCreate', async (message: any) => {
+		// Check if the bot is mentioned in the message
+		if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
+		  // Remove the bot's mention from the message content
+		  const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
+		  // Check if there is any remaining content after removing the mention
+		  if (messageContent) {
+			// Retrieve or create conversation history based on the message's channel ID
+			const channelId = message.channel.id;
+			let conversation = this.conversationHistory.get(channelId);
+			if (!conversation) {
+			  conversation = [{ role: 'system', content: 'You are a user' }];
+			  this.conversationHistory.set(channelId, conversation);
 			}
-			});
-
-			// Update the conversation ID for subsequent requests
-			this.conversationIds.set(channelId, response.data.id);
-
-			// Send the response message and delete the thinking message
-			await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
-			thinkingMessage.delete();
-		} catch (error: any) {
-			message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
-			thinkingMessage.delete();
+			// Add the new user message to the conversation
+			conversation.push({ role: 'user', content: messageContent });
+	  
+			// Send the loading message
+			const thinkingMessage = await message.channel.send('Thinking...');
+	  
+			try {
+			  const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+				model: process.env.MODEL_NAME,
+				messages: conversation,
+				max_tokens: 1024, // Adjust the maximum number of tokens per request
+				temperature: 0.5, // Adjust the temperature for response generation
+				frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
+				presence_penalty: 0.4, // Adjust the presence penalty for response generation
+			  }, {
+				headers: {
+				  'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+				  'Content-Type': 'application/json',
+				  'Conversation-ID': channelId, // Use channel ID as the conversation ID
+				}
+			  });
+	  
+			  // Update the conversation history for subsequent requests
+			  this.conversationHistory.set(channelId, response.data.choices[0].message);
+	  
+			  // Send the response message and delete the thinking message
+			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
+			  thinkingMessage.delete();
+			} catch (error: any) {
+			  message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
+			  thinkingMessage.delete();
+			}
+		  } else {
+			// Handle the case when the /chat command is not found
+			message.channel.send("ERROR BRO! TAIIIIK");
+		  }
 		}
-		} else {
-		// Handle the case when the /chat command is not found
-		message.channel.send("ERROR BRO! TAIIIIK");
-		}
-	}
-	});
+	  });
 
   }
 }
