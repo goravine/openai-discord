@@ -10,7 +10,7 @@ import process from 'process';
 import { AI } from '@/models/ai';
 import { Runnable } from '@/models/runnable';
 import { Logger } from '@/logger';
-import axios from 'axios';
+import { axios } from 'axios';
 
 export class Api implements AI, Runnable {
   /**
@@ -80,8 +80,8 @@ export class Api implements AI, Runnable {
       });
   
       return response.data.choices[0].message as ChatCompletionResponseMessage;
-    } catch (error) {
-      console.error(`Failed to get chat completion: ${error.message}`);
+    } catch (error: any) {
+      console.error(`Failed to get chat completion: ${(error as axios.AxiosError).message}`);
       throw error;
     }
   }
