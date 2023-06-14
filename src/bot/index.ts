@@ -1,6 +1,7 @@
 import {
-  ActivityType, Client, Intents, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,MessageMentions,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,MessageMentions,
 } from 'discord.js';
+import { Intents } from 'discord.js-api';
 import process from 'process';
 import { Logger } from '@/logger';
 import { Runnable } from '@/models/runnable';
