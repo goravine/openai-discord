@@ -164,7 +164,7 @@ export class Bot implements Runnable {
 			  ];
 
 			// Send the loading message
-			const thinkingMessage = await message.channel.send('Thinking...');
+			const thinkingMessage = await message.channel.send('TAR GUA MIKIR DOLO! ...');
 
             try {
 
