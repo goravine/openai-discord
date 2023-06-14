@@ -6,12 +6,12 @@ import { Logger } from '@/logger';
 import { Runnable } from '@/models/runnable';
 import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
-import axios, { AxiosError } from 'axios';
+import { axios, AxiosError } from 'axios';
 
 export class Bot implements Runnable {
-  // Define a conversation ID map
-  public conversationHistory = new Map<string, Array<{ role: string; content: string }>>();
-
+	// Define a conversation ID map
+	public conversationHistory = new Map<string, Array<{ role: string, content: string }>>();
+	
   /**
    * Logger instance
    * @private
@@ -80,7 +80,6 @@ export class Bot implements Runnable {
   /**
    * Initialize Discord API service
    */
-
   run(): void {
     /**
      * Login to Discord API and set status for show command if login was successful or exit process if failed
@@ -130,6 +129,18 @@ export class Bot implements Runnable {
     /**
      *  On interaction create event handler
      */
+    this._client.on('interactionCreate', async (interaction: Interaction) => {
+      /**
+       * Check if interaction is command or chat input command
+       */
+      if (interaction.isCommand() || interaction.isChatInputCommand()) {
+        await this.handleSlashCommand(interaction); // Handle slash command
+      }
+    });
+
+	/**
+     *  On interaction create event handler
+     */
     this._client.on('messageCreate', async (message: any) => {
 		if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
 		  const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
@@ -137,8 +148,13 @@ export class Bot implements Runnable {
 			const channelId = message.channel.id;
 			let conversation = this.conversationHistory.get(channelId);
 			if (!conversation) {
-			  conversation = [{ role: 'system', content: 'You are a user' }];
+			  conversation = [{ role: 'user', content: messageContent }];
 			  this.conversationHistory.set(channelId, conversation);
+			}
+			else
+			{
+				conversation.push({ role: 'user', content: messageContent });
+				this.conversationHistory.set(channelId, conversation);
 			}
 	  
 			const thinkingMessage = await message.channel.send('Thinking...');
@@ -165,9 +181,15 @@ export class Bot implements Runnable {
 			  );
 	  
 			  const responseContent = response.data.choices[0].message.content;
-			  conversation.push({ role: 'user', content: messageContent }); // Move this line below the API request
 			  conversation.push({ role: 'system', content: responseContent });
 	  
+			  // Limit the conversation length
+			  if (conversation.length > 10) 
+			  {
+				conversation.shift(); // Remove the oldest message
+				conversation.shift(); // Remove the oldest message
+			  }
+
 			  this.conversationHistory.set(channelId, conversation);
 	  
 			  await message.channel.send(`${message.author.toString()} ${responseContent}`);
