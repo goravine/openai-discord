@@ -140,10 +140,10 @@ export class Bot implements Runnable {
 		  if (messageContent) {
 			// Retrieve or create conversation history based on the message's channel ID
 			const channelId = message.channel.id;
-			let conversation = conversationHistory.get(channelId);
+			let conversation = this.conversationHistory.get(channelId);
 			if (!conversation) {
 			  conversation = [{ role: 'system', content: 'You are a user' }];
-			  conversationHistory.set(channelId, conversation);
+			  this.conversationHistory.set(channelId, conversation);
 			}
 			// Add the new user message to the conversation
 			conversation.push({ role: 'user', content: messageContent });
@@ -172,7 +172,7 @@ export class Bot implements Runnable {
 			  );
 	  
 			  // Update the conversation history for subsequent requests
-			  conversationHistory.set(channelId, response.data.choices[0].message.content);
+			  this.conversationHistory.set(channelId, response.data.choices[0].message.content);
 	  
 			  // Send the response message and delete the thinking message
 			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
