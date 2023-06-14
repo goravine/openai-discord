@@ -163,7 +163,12 @@ export class Bot implements Runnable {
 				{ role: 'user', content: messageContent }
 			  ];
 
+			// Send the loading message
+			const thinkingMessage = await message.channel.send('Thinking...');
+
             try {
+
+
               const response = await axios.post('https://api.openai.com/v1/chat/completions', {
                 model: process.env.MODEL_NAME,
                 messages: messages,
@@ -181,12 +186,14 @@ export class Bot implements Runnable {
 
               // Update the conversation ID for subsequent requests
               this.conversationId = response.data.id;
-          
-              message.channel.send(response.data.choices[0].message);
+
+			  await message.channel.send(`${message.author} ${response.data.choices[0].message}`);
+			  thinkingMessage.delete();
             } 
             catch (error: any) 
             {
               message.channel.send(`ERROR : Failed to get chat completion: ${(error as AxiosError).message}`);
+			  thinkingMessage.delete();
             }
           } 
           else 
