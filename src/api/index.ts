@@ -71,8 +71,7 @@ export class Api implements AI, Runnable {
     const request = await this._api.createChatCompletion({
       model: process.env.MODEL_NAME + '',
       messages: chatHistory,
-      maxTokens: 2048,
-      max_tokens: 100, // Adjust the maximum number of tokens per request
+      max_tokens: 2048, // Adjust the maximum number of tokens per request
       temperature: 0.8, // Adjust the temperature for response generation
       frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
       presence_penalty: 0.4, // Adjust the presence penalty for response generation
