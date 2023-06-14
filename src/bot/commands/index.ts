@@ -5,6 +5,7 @@ import { ClearCommand } from '@/bot/commands/clearCommand';
 import { HelpCommand } from '@/bot/commands/helpCommand';
 import { ImageCommand } from '@/bot/commands/imageCommand';
 import { PingCommand } from '@/bot/commands/pingCommand';
+import { InfoCommand } from '@/bot/commands/infoCommand';
 
 /**
  * Export all the commands registered as an array for centralized management
@@ -16,4 +17,5 @@ export const commands: Command[] = [
   HelpCommand,
   ImageCommand,
   PingCommand,
+  InfoCommand,
 ];
