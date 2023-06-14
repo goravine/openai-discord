@@ -11,7 +11,7 @@ import { AI } from '@/models/ai';
 import { Runnable } from '@/models/runnable';
 import { Logger } from '@/logger';
 import axios, { AxiosError } from 'axios';
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv4 } from 'uuid';
 
 export class Api implements AI, Runnable {
   /**
@@ -70,7 +70,7 @@ export class Api implements AI, Runnable {
   async chatCompletion(chatHistory: ChatCompletionRequestMessage[]): Promise<ChatCompletionResponseMessage> {
     if(this.conversationId == "")
     {
-      this.conversationId = uuidv4();
+      this.conversationId = Date.now() + '';
     }
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
