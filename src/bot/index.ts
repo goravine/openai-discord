@@ -6,7 +6,7 @@ import { Logger } from '@/logger';
 import { Runnable } from '@/models/runnable';
 import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
-import { axios, AxiosError } from 'axios';
+import axios , {AxiosError } from 'axios';
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
