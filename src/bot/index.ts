@@ -184,9 +184,10 @@ export class Bot implements Runnable {
                 }
               });
 
+			  console.log("Conversation ID : " + response.data.id);
               // Update the conversation ID for subsequent requests
               this.conversationId = response.data.id;
-			  
+
 			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
 
 			  thinkingMessage.delete();
