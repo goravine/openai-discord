@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,MessageMentions,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, MessageMentions, MessageEmbed,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -163,12 +163,14 @@ export class Bot implements Runnable {
 				{ role: 'user', content: messageContent }
 			  ];
 
-			// Send the loading message
-			const thinkingMessage = await message.channel.send('TAR GUA MIKIR DOLO! ...');
+			// Create the "Thinking..." embed
+			const thinkingEmbed = new MessageEmbed()
+			.setColor('#ff9900')
+			.setDescription('Thinking...');
+			
+  			const thinkingMessage = await message.channel.send(thinkingEmbed);
 
             try {
-
-
               const response = await axios.post('https://api.openai.com/v1/chat/completions', {
                 model: process.env.MODEL_NAME,
                 messages: messages,
@@ -187,7 +189,7 @@ export class Bot implements Runnable {
               // Update the conversation ID for subsequent requests
               this.conversationId = response.data.id;
 
-			  message.channel.send(message.author + " " + response.data.choices[0].message);
+			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message}`);
 			  thinkingMessage.delete();
             } 
             catch (error: any) 
