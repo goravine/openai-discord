@@ -191,10 +191,6 @@ export class Bot implements Runnable {
             message.channel.send("ERROR BRO! TAIIIIK");
           }
         }
-      }
     });
-    
-    
-    
   }
 }
