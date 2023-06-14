@@ -136,29 +136,40 @@ export class Bot implements Runnable {
 
     this._client.on('messageCreate', async (message: any) => {
       console.log("new chat! : " + message.content);
+      
       // Check if the bot is mentioned in the message
       if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
         // Remove the bot's mention from the message content
         const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
     
         console.log("someone asked the AI : " + messageContent);
+        
         // Check if there is any remaining content after removing the mention
         if (messageContent) {
-          // Call the /chat command and send the message content
-          const response = await this.handleSlashCommand({
-            content: messageContent,
+          // Create a mock interaction object with the required properties
+          const interaction = {
             user: message.author,
             guild: message.guild,
             channel: message.channel,
             isCommand: () => true,
             isChatInputCommand: () => true,
-          });
+            options: [
+              {
+                name: 'message',
+                value: messageContent,
+              },
+            ],
+          };
+    
+          // Call the handleSlashCommand function with the mock interaction
+          const response = await this.handleSlashCommand(interaction);
     
           // Send the response back to the channel
           message.channel.send(response);
         }
       }
     });
+    
     
   }
 }
