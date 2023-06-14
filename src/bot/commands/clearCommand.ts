@@ -20,7 +20,9 @@ export const ClearCommand: Command = {
      */
     const channel = client.channels.cache.get(interaction.channelId) as TextChannel; // Get the channel from the channel id
     const messages = await channel.messages.fetch({ limit: 100 }); // Get the last 100 messages from the channel
-    const botMessages = messages.filter((message : any) => message.author.bot); // Filter messages sent by the bot
+    const botAndMentionedMessages = messages.filter((message : any) => {
+      return (message.author.bot || message.mentions.has(client.user)); // Filter messages sent by the bot or mention the bot
+    });
     const consistentMessages = messages
       .filter((x) => x.interaction?.user.id === interaction.user.id);
 
@@ -55,13 +57,13 @@ export const ClearCommand: Command = {
       }
     }
 
-    if(botMessages.size > 0)
+    if(botAndMentionedMessages.size > 0)
     {
       if (channel.type === ChannelType.GuildText) {
         /**
          * Bulk delete the messages if the channel is a guild text channel
          */
-        await channel.bulkDelete(botMessages); // Delete the bot's messages
+        await channel.bulkDelete(botAndMentionedMessages); // Delete the bot's messages
       }
     }
 
