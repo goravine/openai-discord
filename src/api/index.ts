@@ -69,7 +69,7 @@ export class Api implements AI, Runnable {
   async chatCompletion(chatHistory: ChatCompletionRequestMessage[]): Promise<ChatCompletionResponseMessage> {
     if(this.conversationId == "")
     {
-      this.conversationId = Date.now() + '';
+      this.conversationId = 'AT-CHAT-'+ Date.now() + '';
     }
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions/'+this.conversationId, {
