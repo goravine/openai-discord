@@ -139,8 +139,7 @@ export class Bot implements Runnable {
     });
     
 
-    this._client.on('messageCreate', async (message: any) => 
-    {
+    this._client.on('messageCreate', async (message: any) => {
       // Check if the bot is mentioned in the message
       if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
         // Remove the bot's mention from the message content
@@ -148,9 +147,9 @@ export class Bot implements Runnable {
     
         console.log("someone asked the AI : " + messageContent);
     
-        // Check if there is any remaining content after removing the mention
-        if (messageContent) 
-        {
+          // Check if there is any remaining content after removing the mention
+          if (messageContent) 
+          {
             console.log("try to curl : " + messageContent);
             //create curl on typescript to ask openai from the message and keep the response on the response variable
             if(this.conversationId == "")
@@ -184,8 +183,9 @@ export class Bot implements Runnable {
               message.channel.send(`ERROR : Failed to get chat completion: ${(error as AxiosError).message}`);
               throw error;
             }
-
-          } else {
+          } 
+          else 
+          {
             // Handle the case when the /chat command is not found
             message.channel.send("ERROR BRO! TAIIIIK");
           }
