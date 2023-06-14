@@ -20,8 +20,9 @@ export const ClearCommand: Command = {
      */
     const channel = client.channels.cache.get(interaction.channelId) as TextChannel; // Get the channel from the channel id
     const messages = await channel.messages.fetch({ limit: 100 }); // Get the last 100 messages from the channel
+    const botMessages = messages.filter((message : any) => message.author.bot); // Filter messages sent by the bot
     const consistentMessages = messages
-      .filter((x) => x.interaction?.user.id === interaction.user.id);
+      .filter((x) => x.interaction?.user.id === interaction.user.id);es
 
     /**
      * Create the embed message
@@ -44,6 +45,7 @@ export const ClearCommand: Command = {
          * Bulk delete the messages if the channel is a guild text channel
          */
         await channel.bulkDelete(consistentMessages);
+        await channel.bulkDelete(botMessages); // Delete the bot's messages
       } else {
         /**
          * Delete the messages one by one if the channel is a DM channel
