@@ -76,8 +76,7 @@ export class Api implements AI, Runnable {
       temperature: 0.8, // Adjust the temperature for response generation
       frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
       presence_penalty: 0.4, // Adjust the presence penalty for response generation
-    }
-    }).then((response) => response.data.choices[0].message)
+    }).then((response : any) => response.data.choices[0].message)
       .catch((error: Error) => {
         this._logger.logService.error(`Failed to get chat completion: ${error.message}`); // Request failed
         throw error;
