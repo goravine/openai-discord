@@ -170,9 +170,15 @@ export class Bot implements Runnable {
     
             // Send the response back to the channel
             message.channel.send(response);
+          } else {
+            // Handle the case when the /chat command is not found
+            console.log("The /chat command is not registered.");
           }
         }
       }
     });
+    
+    
+    
   }
 }
