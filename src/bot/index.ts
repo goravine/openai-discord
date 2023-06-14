@@ -78,7 +78,7 @@ export class Bot implements Runnable {
    * Initialize Discord API service
    */
   
-  public conversationId = '';
+  public static conversationId = '';
 
   run(): void {
     /**
@@ -144,17 +144,13 @@ export class Bot implements Runnable {
       if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
         // Remove the bot's mention from the message content
         const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
-    
-        console.log("someone asked the AI : " + messageContent);
-    
           // Check if there is any remaining content after removing the mention
           if (messageContent) 
           {
-            console.log("try to curl : " + messageContent);
             //create curl on typescript to ask openai from the message and keep the response on the response variable
-            if(this.conversationId == "")
+            if(Bot.conversationId == "")
             {
-              this.conversationId = 'AT-CHAT-'+ Date.now() + '';
+				Bot.conversationId = 'AT-CHAT-'+ Date.now() + '';
             }
 
 			// Create an array of message objects
@@ -165,10 +161,7 @@ export class Bot implements Runnable {
 
 			// Send the loading message
 			const thinkingMessage = await message.channel.send('Thinking...');
-
             try {
-
-
               const response = await axios.post('https://api.openai.com/v1/chat/completions', {
                 model: process.env.MODEL_NAME,
                 messages: messages,
@@ -180,13 +173,13 @@ export class Bot implements Runnable {
                 headers: {
                   'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
                   'Content-Type': 'application/json',
-                  'Conversation-ID': this.conversationId,
+                  'Conversation-ID': Bot.conversationId,
                 }
               });
 
 			  console.log("Conversation ID : " + response.data.id);
               // Update the conversation ID for subsequent requests
-              this.conversationId = response.data.id;
+              Bot.conversationId = response.data.id;
 
 			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
 
