@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,MessageMentions,
+  ActivityType, Client, Intents, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,MessageMentions,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -134,6 +134,10 @@ export class Bot implements Runnable {
       }
     });
 
+    const client = new Client({
+      intents: Intents.ALL,
+    });
+    
     this._client.on('messageCreate', async (message: any) => {
       console.log("new chat! : " + message.content);
       // Check if the bot is mentioned in the message
