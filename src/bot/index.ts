@@ -186,8 +186,9 @@ export class Bot implements Runnable {
 
               // Update the conversation ID for subsequent requests
               this.conversationId = response.data.id;
+			  
+			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
 
-			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.toString()}`);
 			  thinkingMessage.delete();
             } 
             catch (error: any) 
