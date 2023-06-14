@@ -44,7 +44,6 @@ export class Api implements AI, Runnable {
     this._configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY,
       basePath: baseEndpoint,
-      timeout: 5000, // Timeout for API requests in milliseconds
       headers: {
         'User-Agent': 'ATSoftware-discord', // Set a custom User-Agent header if needed
       },
