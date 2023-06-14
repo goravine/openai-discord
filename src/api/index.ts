@@ -88,7 +88,14 @@ export class Api implements AI, Runnable {
   
       return response.data.choices[0].message as ChatCompletionResponseMessage;
     } catch (error: any) {
-      this._logger.logService.error(`Failed to get chat completion: ${(error as AxiosError).message}`);
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response) {
+          this._logger.logService('OpenAI API Error:', axiosError.response.data);
+          this._logger.logService('OpenAI API Status:', axiosError.response.status);
+          this._logger.logService('OpenAI API Headers:', axiosError.response.headers);
+        }
+      }
       throw error;
     }
   }
