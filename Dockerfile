@@ -11,11 +11,10 @@ ENV OPENAI_ORGANIZATION_ID=$OPENAI_ORGANIZATION_ID
 ENV OPENAI_API_KEY=$OPENAI_API_KEY
 ENV MODEL_NAME=$MODEL_NAME
 
-RUN yarn add --dev @types/uuid
 COPY yarn.lock ./
 COPY package*.json ./
 COPY tsconfig*.json ./
-RUN yarn install
+RUN yarn install --frozen-lockfile
 COPY . ./
 RUN yarn run build
 
@@ -25,7 +24,7 @@ COPY --from=ts-compiler /usr/app/yarn.lock ./
 COPY --from=ts-compiler /usr/app/package*.json ./
 COPY --from=ts-compiler /usr/app/dist ./
 ENV NODE_ENV=production
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 FROM node:18-slim
 WORKDIR /usr/app
