@@ -144,7 +144,7 @@ export class Bot implements Runnable {
 	  
 			const thinkingMessage = await message.channel.send('Thinking...');
 	  
-			console.log(conversation.toString());
+			console.log(JSON.stringify(conversation));
 			try {
 			  const response = await axios.post(
 				'https://api.openai.com/v1/chat/completions',
