@@ -79,10 +79,12 @@ export class Api implements AI, Runnable {
         return response.data.choices[0].message;
       })
       .catch((error: Error) => {
-        
-        this._logger.logService.error('Rate Limit Remaining:', error.headers['x-ratelimit-remaining']);
-        this._logger.logService.error('Rate Limit Reset:', error.headers['x-ratelimit-reset']);
-        this._logger.logService.error('Rate Limit Limit:', error.headers['x-ratelimit-limit']);
+        if (error && error.headers) {
+          // Print rate limit headers from the error response
+          console.log('Rate Limit Remaining:', error.headers['x-ratelimit-remaining']);
+          console.log('Rate Limit Reset:', error.headers['x-ratelimit-reset']);
+          console.log('Rate Limit Limit:', error.headers['x-ratelimit-limit']);
+        }
         this._logger.logService.error(`Failed to get chat completion: ${error.message}`); // Request failed
         throw error;
       });
