@@ -148,43 +148,52 @@ export class Bot implements Runnable {
         const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
     
         console.log("someone asked the AI : " + messageContent);
-          //create curl on typescript to ask openai from the message and keep the response on the response variable
-          if(this.conversationId == "")
-          {
-            this.conversationId = 'AT-CHAT-'+ Date.now() + '';
+    
+        // Check if there is any remaining content after removing the mention
+        if (messageContent) 
+        {
+            //create curl on typescript to ask openai from the message and keep the response on the response variable
+            if(this.conversationId == "")
+            {
+              this.conversationId = 'AT-CHAT-'+ Date.now() + '';
+            }
+
+            try {
+              const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+                model: process.env.MODEL_NAME,
+                messages: messageContent,
+                max_tokens: 1024, // Adjust the maximum number of tokens per request
+                temperature: 0.5, // Adjust the temperature for response generation
+                frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
+                presence_penalty: 0.4, // Adjust the presence penalty for response generation
+              }, {
+                headers: {
+                  'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                  'Content-Type': 'application/json',
+                  'Conversation-ID': this.conversationId,
+                }
+              });
+
+              // Update the conversation ID for subsequent requests
+              this.conversationId = response.data.id;
+          
+              message.channel.send(response.data.choices[0].message);
+            } 
+            catch (error: any) 
+            {
+              message.channel.send(`ERROR : Failed to get chat completion: ${(error as AxiosError).message}`);
+              throw error;
+            }
+
+          } else {
+            // Handle the case when the /chat command is not found
+            message.channel.send("ERROR BRO! TAIIIIK");
           }
-
-          try {
-            const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-              model: process.env.MODEL_NAME,
-              messages: messageContent,
-              max_tokens: 1024, // Adjust the maximum number of tokens per request
-              temperature: 0.5, // Adjust the temperature for response generation
-              frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
-              presence_penalty: 0.4, // Adjust the presence penalty for response generation
-            }, {
-              headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-                'Content-Type': 'application/json',
-                'Conversation-ID': this.conversationId,
-              }
-            });
-
-            // Update the conversation ID for subsequent requests
-            this.conversationId = response.data.id;
-        
-            message.channel.send(response.data.choices[0].message);
-          } 
-          catch (error: any) 
-          {
-            message.channel.send(`ERROR : Failed to get chat completion: ${(error as AxiosError).message}`);
-            throw error;
-          }
-
-        } else {
-          // Handle the case when the /chat command is not found
-          message.channel.send("ERROR BRO! TAIIIIK");
         }
+      }
     });
+    
+    
+    
   }
 }
