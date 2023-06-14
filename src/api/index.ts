@@ -41,8 +41,8 @@ export class Api implements AI, Runnable {
      * Create OpenAI API configuration with API key
      */
     this._configuration = new Configuration({
-      organization: process.env.OPENAI_ORGANIZATION_ID,
-      apiKey: process.env.OPENAI_API_KEY,
+      organization: process.env.OPENAI_ORGANIZATION_ID + '',
+      apiKey: process.env.OPENAI_API_KEY + '',
     });
   }
 
