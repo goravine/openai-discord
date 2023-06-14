@@ -150,7 +150,7 @@ export class Bot implements Runnable {
           const command = this._client.application.commands.cache.find((cmd: any) => cmd.name === 'chat');
     
           // Check if the command is found
-          if (command) {
+          if (command != null) {
             // Create a mock command interaction
             const interaction = {
               commandId: command.id,
