@@ -181,7 +181,6 @@ export class Bot implements Runnable {
             catch (error: any) 
             {
               message.channel.send(`ERROR : Failed to get chat completion: ${(error as AxiosError).message}`);
-              throw error;
             }
           } 
           else 
