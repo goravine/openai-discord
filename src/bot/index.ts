@@ -139,9 +139,8 @@ export class Bot implements Runnable {
     });
     
 
-    this._client.on('messageCreate', async (message: any) => {
-      console.log("new chat! : " + message.content);
-    
+    this._client.on('messageCreate', async (message: any) => 
+    {
       // Check if the bot is mentioned in the message
       if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
         // Remove the bot's mention from the message content
