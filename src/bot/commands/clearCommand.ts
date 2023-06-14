@@ -22,7 +22,7 @@ export const ClearCommand: Command = {
     const messages = await channel.messages.fetch({ limit: 100 }); // Get the last 100 messages from the channel
     const botMessages = messages.filter((message : any) => message.author.bot); // Filter messages sent by the bot
     const consistentMessages = messages
-      .filter((x) => x.interaction?.user.id === interaction.user.id);es
+      .filter((x) => x.interaction?.user.id === interaction.user.id);
 
     /**
      * Create the embed message
