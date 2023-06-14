@@ -132,23 +132,16 @@ export class Bot implements Runnable {
      *  On interaction create event handler
      */
     this._client.on('messageCreate', async (message: any) => {
-		// Check if the bot is mentioned in the message
 		if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
-		  // Remove the bot's mention from the message content
 		  const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
-		  // Check if there is any remaining content after removing the mention
 		  if (messageContent) {
-			// Retrieve or create conversation history based on the message's channel ID
 			const channelId = message.channel.id;
 			let conversation = this.conversationHistory.get(channelId);
 			if (!conversation) {
 			  conversation = [{ role: 'system', content: 'You are a user' }];
 			  this.conversationHistory.set(channelId, conversation);
 			}
-			// Add the new user message to the conversation
-			conversation.push({ role: 'user', content: messageContent });
 	  
-			// Send the loading message
 			const thinkingMessage = await message.channel.send('Thinking...');
 	  
 			try {
@@ -156,41 +149,39 @@ export class Bot implements Runnable {
 				'https://api.openai.com/v1/chat/completions',
 				{
 				  model: process.env.MODEL_NAME,
-				  messages: conversation,
-				  max_tokens: 1024, // Adjust the maximum number of tokens per request
-				  temperature: 0.5, // Adjust the temperature for response generation
-				  frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
-				  presence_penalty: 0.4, // Adjust the presence penalty for response generation
+				  messages: conversation, // Update to include complete conversation history
+				  max_tokens: 1024,
+				  temperature: 0.5,
+				  frequency_penalty: 0.6,
+				  presence_penalty: 0.4,
 				},
 				{
 				  headers: {
 					'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
 					'Content-Type': 'application/json',
-					'Conversation-ID': channelId, // Use channel ID as the conversation ID
+					'Conversation-ID': channelId,
 				  },
 				}
 			  );
 	  
-			  // Extract the response message content and push it to the conversation array
-				const responseContent = response.data.choices[0].message.content;
-				conversation.push({ role: 'bot', content: responseContent });
-
-				// Update the conversation history for subsequent requests
-				this.conversationHistory.set(channelId, conversation);
-
-				// Send the response message and delete the thinking message
-				await message.channel.send(`${message.author.toString()} ${responseContent}`);
-				thinkingMessage.delete();
+			  const responseContent = response.data.choices[0].message.content;
+			  conversation.push({ role: 'user', content: messageContent }); // Move this line below the API request
+			  conversation.push({ role: 'bot', content: responseContent });
+	  
+			  this.conversationHistory.set(channelId, conversation);
+	  
+			  await message.channel.send(`${message.author.toString()} ${responseContent}`);
+			  thinkingMessage.delete();
 			} catch (error: any) {
 			  message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
 			  thinkingMessage.delete();
 			}
 		  } else {
-			// Handle the case when the /chat command is not found
-			message.channel.send("ERROR BRO! TAIIIIK");
+			message.channel.send("ERROR: No message content provided.");
 		  }
 		}
 	  });
+	  
 
   }
 }
