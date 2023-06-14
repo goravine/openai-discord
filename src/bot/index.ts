@@ -144,7 +144,8 @@ export class Bot implements Runnable {
         console.log("someone asked the AI : " + messageContent);
         // Check if there is any remaining content after removing the mention
         if (messageContent) {
-          const commandInteraction = CommandInteraction.create(this._client, {
+          // Create a CommandInteraction object
+          const commandInteraction = this._client.createInteraction({
             id: message.id,
             type: 'CHAT_INPUT',
             commandName: 'chat',
