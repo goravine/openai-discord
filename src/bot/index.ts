@@ -55,7 +55,7 @@ export class Bot implements Runnable {
   }
 
 	// Define a conversation ID map
-	public conversationHistory = new Map<string, Array<{ role: string, content: string }>>();
+	public conversationHistory = new Map<string, Array<{ role: string; content: string }>>();
 
 
   /**
@@ -140,10 +140,10 @@ export class Bot implements Runnable {
 		  if (messageContent) {
 			// Retrieve or create conversation history based on the message's channel ID
 			const channelId = message.channel.id;
-			let conversation = this.conversationHistory.get(channelId);
+			let conversation = conversationHistory.get(channelId);
 			if (!conversation) {
 			  conversation = [{ role: 'system', content: 'You are a user' }];
-			  this.conversationHistory.set(channelId, conversation);
+			  conversationHistory.set(channelId, conversation);
 			}
 			// Add the new user message to the conversation
 			conversation.push({ role: 'user', content: messageContent });
@@ -152,23 +152,27 @@ export class Bot implements Runnable {
 			const thinkingMessage = await message.channel.send('Thinking...');
 	  
 			try {
-			  const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-				model: process.env.MODEL_NAME,
-				messages: conversation,
-				max_tokens: 1024, // Adjust the maximum number of tokens per request
-				temperature: 0.5, // Adjust the temperature for response generation
-				frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
-				presence_penalty: 0.4, // Adjust the presence penalty for response generation
-			  }, {
-				headers: {
-				  'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-				  'Content-Type': 'application/json',
-				  'Conversation-ID': channelId, // Use channel ID as the conversation ID
+			  const response = await axios.post(
+				'https://api.openai.com/v1/chat/completions',
+				{
+				  model: process.env.MODEL_NAME,
+				  messages: conversation,
+				  max_tokens: 1024, // Adjust the maximum number of tokens per request
+				  temperature: 0.5, // Adjust the temperature for response generation
+				  frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
+				  presence_penalty: 0.4, // Adjust the presence penalty for response generation
+				},
+				{
+				  headers: {
+					'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+					'Content-Type': 'application/json',
+					'Conversation-ID': channelId, // Use channel ID as the conversation ID
+				  },
 				}
-			  });
+			  );
 	  
 			  // Update the conversation history for subsequent requests
-			  this.conversationHistory.set(channelId, response.data.choices[0].message);
+			  conversationHistory.set(channelId, response.data.choices[0].message.content);
 	  
 			  // Send the response message and delete the thinking message
 			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
