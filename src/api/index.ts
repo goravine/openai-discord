@@ -72,7 +72,7 @@ export class Api implements AI, Runnable {
       this.conversationId = 'AT-CHAT-'+ Date.now() + '';
     }
     try {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions/', {
+      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
         model: process.env.MODEL_NAME,
         messages: chatHistory,
         max_tokens: 1024, // Adjust the maximum number of tokens per request
