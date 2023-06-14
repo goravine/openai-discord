@@ -153,8 +153,8 @@ export class Bot implements Runnable {
           if (command) {
             // Create a mock command interaction
             const interaction: any = {
-              commandId: command.id,
-              commandName: command.name,
+              commandId: command!.id,
+              commandName: command!.name,
               channelId: message.channel.id,
               guildId: message.guild.id,
               options: [
@@ -172,7 +172,7 @@ export class Bot implements Runnable {
             message.channel.send(response);
           } else {
             // Handle the case when the /chat command is not found
-            console.log("The /chat command is not registered.");
+            console.log("ERROR BRO! TAIIIIK");
           }
         }
       }
