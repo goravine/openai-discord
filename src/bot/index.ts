@@ -147,7 +147,7 @@ export class Bot implements Runnable {
         // Check if there is any remaining content after removing the mention
         if (messageContent) {
           // Find the slash command that corresponds to the /chat command
-          const command = this._client.application.commands.cache.find((cmd: any) => cmd.name === 'chat');
+          const command = this._client.application.commands.cache.find((cmd: any) => cmd.name === 'chat') ?? false;
     
           // Check if the command is found
           if (command ?? false) {
