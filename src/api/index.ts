@@ -39,8 +39,22 @@ export class Api implements AI, Runnable {
     /**
      * Create OpenAI API configuration with API key
      */
+    const baseEndpoint = 'https://api.openai.com'; // The API endpoint URL
+
     this._configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY,
+      basePath: baseEndpoint,
+      timeout: 5000, // Timeout for API requests in milliseconds
+      headers: {
+        'User-Agent': 'ATSoftware-discord', // Set a custom User-Agent header if needed
+      },
+      limits: {
+        maxTokens: 100, // Adjust the maximum number of tokens per request
+        temperature: 0.8, // Adjust the temperature for response generation
+        frequencyPenalty: 0.6, // Adjust the frequency penalty for response generation
+        presencePenalty: 0.4, // Adjust the presence penalty for response generation
+      },
+      model: process.env.MODEL_NAME, // Specify the model to use (e.g., text-davinci-003, text-codex-003, etc.)
     });
   }
 
@@ -68,7 +82,7 @@ export class Api implements AI, Runnable {
      * Create chat completion request and return response or throw error
      */
     const request = await this._api.createChatCompletion({
-      model: 'gpt-3.5-turbo',
+      model: process.env.MODEL_NAME,
       messages: chatHistory,
     }).then((response) => response.data.choices[0].message)
       .catch((error: Error) => {
