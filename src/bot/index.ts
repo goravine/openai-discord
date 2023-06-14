@@ -54,6 +54,9 @@ export class Bot implements Runnable {
     });
   }
 
+  // Define a conversation ID map
+  public conversationIds = new Map<string, string>();
+
   /**
    * Handle slash commands from Discord API
    * @param interaction - Interaction from Discord API to handle as slash command (e.g. /help)
@@ -135,10 +138,6 @@ export class Bot implements Runnable {
         await this.handleSlashCommand(interaction); // Handle slash command
       }
     });
-    
-
-    // Define a conversation ID map
-	const conversationIds = new Map<string, string>();
 
 	this._client.on('messageCreate', async (message: any) => {
 	// Check if the bot is mentioned in the message
@@ -149,10 +148,10 @@ export class Bot implements Runnable {
 		if (messageContent) {
 		// Retrieve or generate a conversation ID based on the message's channel ID
 		const channelId = message.channel.id;
-		let conversationId = conversationIds.get(channelId);
+		let conversationId = this.conversationIds.get(channelId);
 		if (!conversationId) {
 			conversationId = `AT-CHAT-${Date.now()}`;
-			conversationIds.set(channelId, conversationId);
+			this.conversationIds.set(channelId, conversationId);
 		}
 
 		// Create an array of message objects
@@ -181,7 +180,7 @@ export class Bot implements Runnable {
 			});
 
 			// Update the conversation ID for subsequent requests
-			conversationIds.set(channelId, response.data.id);
+			this.conversationIds.set(channelId, response.data.id);
 
 			// Send the response message and delete the thinking message
 			await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
