@@ -140,6 +140,7 @@ export class Bot implements Runnable {
         // Remove the bot's mention from the message content
         const messageContent = message.content.replace(MessageMentions.USERS_PATTERN, '').trim();
 
+        console.log("someone asked the AI : " + messageContent);
         // Check if there is any remaining content after removing the mention
         if (messageContent) {
           // Call the /chat command and send the message content
