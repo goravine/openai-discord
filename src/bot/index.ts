@@ -163,11 +163,13 @@ export class Bot implements Runnable {
 				{ role: 'user', content: messageContent }
 			  ];
 			  
-			const thinkingEmbed = new EmbedBuilder()
+			const thinkingEmbedBuild = new EmbedBuilder()
 			.setColor('#ff9900')
 			.setDescription('Thinking...');
+
+			const thinkingEmbed = thinkingEmbedBuild.build as string;
 			
-  			const thinkingMessage = await message.channel.send(thinkingEmbed.build());
+  			const thinkingMessage = await message.channel.send(thinkingEmbed);
 
             try {
               const response = await axios.post('https://api.openai.com/v1/chat/completions', {
