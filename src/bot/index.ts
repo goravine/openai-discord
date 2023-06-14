@@ -166,7 +166,7 @@ export class Bot implements Runnable {
 				{
 				  model: process.env.MODEL_NAME,
 				  messages: conversation, // Update to include complete conversation history
-				  max_tokens: 2048,
+				  max_tokens: process.env.MAX_TOKEN,
 				  temperature: 0.5,
 				  frequency_penalty: 0.6,
 				  presence_penalty: 0.4,
