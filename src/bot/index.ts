@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,MessageMentions,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -131,6 +131,30 @@ export class Bot implements Runnable {
        */
       if (interaction.isCommand() || interaction.isChatInputCommand()) {
         await this.handleSlashCommand(interaction); // Handle slash command
+      }
+    });
+
+    this._client.on('messageCreate', async (message : any) => {
+      // Check if the bot is mentioned in the message
+      if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
+        // Remove the bot's mention from the message content
+        const messageContent = message.content.replace(MessageMentions.USERS_PATTERN, '').trim();
+
+        // Check if there is any remaining content after removing the mention
+        if (messageContent) {
+          // Call the /chat command and send the message content
+          const response = await this.handleSlashCommand({
+            content: `/chat ${messageContent}`,
+            user: message.author,
+            guild: message.guild,
+            channel: message.channel,
+            isCommand: () => true,
+            isChatInputCommand: () => true,
+          });
+
+          // Send the response back to the channel
+          message.channel.send(response);
+        }
       }
     });
   }
