@@ -45,7 +45,6 @@ export const ClearCommand: Command = {
          * Bulk delete the messages if the channel is a guild text channel
          */
         await channel.bulkDelete(consistentMessages);
-        await channel.bulkDelete(botMessages); // Delete the bot's messages
       } else {
         /**
          * Delete the messages one by one if the channel is a DM channel
@@ -53,6 +52,16 @@ export const ClearCommand: Command = {
         consistentMessages.forEach((message) => {
           message.delete();
         });
+      }
+    }
+
+    if(botMessages.size > 0)
+    {
+      if (channel.type === ChannelType.GuildText) {
+        /**
+         * Bulk delete the messages if the channel is a guild text channel
+         */
+        await channel.bulkDelete(botMessages); // Delete the bot's messages
       }
     }
 
