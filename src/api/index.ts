@@ -41,12 +41,6 @@ export class Api implements AI, Runnable {
      */
     this._configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY,
-      limits: {
-        maxTokens: 100, // Adjust the maximum number of tokens per request
-        temperature: 0.8, // Adjust the temperature for response generation
-        frequencyPenalty: 0.6, // Adjust the frequency penalty for response generation
-        presencePenalty: 0.4, // Adjust the presence penalty for response generation
-      },
     });
   }
 
@@ -76,6 +70,12 @@ export class Api implements AI, Runnable {
     const request = await this._api.createChatCompletion({
       model: process.env.MODEL_NAME,
       messages: chatHistory,
+      limits: {
+        maxTokens: 100, // Adjust the maximum number of tokens per request
+        temperature: 0.8, // Adjust the temperature for response generation
+        frequencyPenalty: 0.6, // Adjust the frequency penalty for response generation
+        presencePenalty: 0.4, // Adjust the presence penalty for response generation
+      },
     }).then((response) => response.data.choices[0].message)
       .catch((error: Error) => {
         this._logger.logService.error(`Failed to get chat completion: ${error.message}`); // Request failed
