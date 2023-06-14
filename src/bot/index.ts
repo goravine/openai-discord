@@ -1,7 +1,6 @@
 import {
   ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,MessageMentions,
 } from 'discord.js';
-import { Intents } from 'discord.js-api';
 import process from 'process';
 import { Logger } from '@/logger';
 import { Runnable } from '@/models/runnable';
@@ -135,10 +134,6 @@ export class Bot implements Runnable {
       }
     });
 
-    const client = new Client({
-      intents: Intents.ALL,
-    });
-    
     this._client.on('messageCreate', async (message: any) => {
       console.log("new chat! : " + message.content);
       // Check if the bot is mentioned in the message
@@ -149,21 +144,15 @@ export class Bot implements Runnable {
         console.log("someone asked the AI : " + messageContent);
         // Check if there is any remaining content after removing the mention
         if (messageContent) {
-          // Create a CommandInteraction object
-          const commandInteraction = this._client.createInteraction({
-            id: message.id,
-            type: 'CHAT_INPUT',
-            commandName: 'chat',
-            options: [
-              {
-                name: 'message',
-                value: messageContent,
-              },
-            ],
+          // Call the /chat command and send the message content
+          const response = await this.handleSlashCommand({
+            content: messageContent,
+            user: message.author,
+            guild: message.guild,
+            channel: message.channel,
+            isCommand: () => true,
+            isChatInputCommand: () => true,
           });
-    
-          // Call the /chat command using the CommandInteraction
-          const response = await this.handleSlashCommand(commandInteraction);
     
           // Send the response back to the channel
           message.channel.send(response);
