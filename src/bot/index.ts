@@ -147,10 +147,15 @@ export class Bot implements Runnable {
         // Check if there is any remaining content after removing the mention
         if (messageContent) {
           // Find the slash command that corresponds to the /chat command
-          const command = this._client.application.commands.cache.find((cmd: any) => cmd.name === 'chat') ?? false;
+          var command = this._client.application.commands.cache.find((cmd: any) => cmd.name === 'chat') ?? false;
     
+          if(!command)
+          {
+            message.channel.send("ERROR BRO! TAIIIIK");
+            return;
+          }
           // Check if the command is found
-          if (command ?? false) {
+          if (command && command.id && command.name) {
             // Create a mock command interaction
             const interaction: any = {
               commandId: command!.id,
@@ -172,7 +177,7 @@ export class Bot implements Runnable {
             message.channel.send(response);
           } else {
             // Handle the case when the /chat command is not found
-            console.log("ERROR BRO! TAIIIIK");
+            message.channel.send("ERROR BRO! TAIIIIK");
           }
         }
       }
