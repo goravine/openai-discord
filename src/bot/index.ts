@@ -158,7 +158,7 @@ export class Bot implements Runnable {
 			}
 	  
 			const thinkingMessage = await message.channel.send('Thinking...');
-			const max_token = parseInt(process.env.MAX_TOKEN ?? 1024);
+			const max_token = parseInt(process.env.MAX_TOKEN ?? '1024');
 			console.log(JSON.stringify(conversation));
 			try {
 			  const response = await axios.post(
