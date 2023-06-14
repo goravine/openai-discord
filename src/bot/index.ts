@@ -171,6 +171,10 @@ export class Bot implements Runnable {
             // Send the response back to the channel
             message.channel.send(response);
           }
+          else
+          {
+            message.channel.send("GAGAL BRO");
+          }
         }
       }
     });
