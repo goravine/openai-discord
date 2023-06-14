@@ -19,7 +19,11 @@ export const InfoCommand: Command = {
     /**
      * Create the content for the message and calculate the latency
      */
-    const content = `ENV Information ${process.env}`;
+    var content = `ENV Information:\n`;
+
+    Object.keys(process.env).forEach((key) => {
+      content += `${key}: ${process.env[key]}\n`;
+    });
 
     /**
      * Create the embed message
