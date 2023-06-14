@@ -152,6 +152,7 @@ export class Bot implements Runnable {
         // Check if there is any remaining content after removing the mention
         if (messageContent) 
         {
+            console.log("try to curl : " + messageContent);
             //create curl on typescript to ask openai from the message and keep the response on the response variable
             if(this.conversationId == "")
             {
