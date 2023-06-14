@@ -78,7 +78,7 @@ export class Bot implements Runnable {
    * Initialize Discord API service
    */
   
-  public static conversationId = '';
+  public conversationId = '';
 
   run(): void {
     /**
@@ -148,9 +148,9 @@ export class Bot implements Runnable {
           if (messageContent) 
           {
             //create curl on typescript to ask openai from the message and keep the response on the response variable
-            if(Bot.conversationId == "")
+            if(this.conversationId == "")
             {
-				Bot.conversationId = 'AT-CHAT-'+ Date.now() + '';
+              this.conversationId = 'AT-CHAT-'+ Date.now() + '';
             }
 
 			// Create an array of message objects
@@ -173,13 +173,11 @@ export class Bot implements Runnable {
                 headers: {
                   'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
                   'Content-Type': 'application/json',
-                  'Conversation-ID': Bot.conversationId,
+                  'Conversation-ID': this.conversationId,
                 }
               });
 
-			  console.log("Conversation ID : " + response.data.id);
               // Update the conversation ID for subsequent requests
-              Bot.conversationId = response.data.id;
 
 			  await message.channel.send(`${message.author.toString()} ${response.data.choices[0].message.content}`);
 
