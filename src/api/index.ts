@@ -10,7 +10,7 @@ import process from 'process';
 import { AI } from '@/models/ai';
 import { Runnable } from '@/models/runnable';
 import { Logger } from '@/logger';
-import { exec } from 'child_process';
+import axios, { AxiosError } from 'axios';
 
 export class Api implements AI, Runnable {
   /**
@@ -65,28 +65,26 @@ export class Api implements AI, Runnable {
    * @returns {ChatCompletionResponseMessage} - Chat completion response object containing the completion
    */
   async chatCompletion(chatHistory: ChatCompletionRequestMessage[]): Promise<ChatCompletionResponseMessage> {
-    const curlCommand = `curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${process.env.OPENAI_API_KEY}" -d '${JSON.stringify({
-      model: process.env.MODEL_NAME,
-      messages: chatHistory,
-      max_tokens: 1024, // Adjust the maximum number of tokens per request
-      temperature: 0.5, // Adjust the temperature for response generation
-      frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
-      presence_penalty: 0.4, // Adjust the presence penalty for response generation
-    })}' https://api.openai.com/v1/chat/completions`;
-  
-    return new Promise((resolve, reject) => {
-      exec(curlCommand, (error : any, stdout : any, stderr : any) => {
-        if (error) {
-          this._logger.logService.error(`Failed to execute cURL command: ${error.message}`);
-          reject(error);
-          return;
+    try {
+      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+        model: process.env.MODEL_NAME,
+        messages: chatHistory,
+        max_tokens: 1024, // Adjust the maximum number of tokens per request
+        temperature: 0.5, // Adjust the temperature for response generation
+        frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
+        presence_penalty: 0.4, // Adjust the presence penalty for response generation
+      }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
         }
-  
-        const responseData = JSON.parse(stdout);
-        const completionMessage = responseData.choices[0].message as ChatCompletionResponseMessage;
-        resolve(completionMessage);
       });
-    });
+  
+      return response.data.choices[0].message as ChatCompletionResponseMessage;
+    } catch (error: any) {
+      this._logger.logService.error(`Failed to get chat completion: ${(error as AxiosError).message}`);
+      throw error;
+    }
   }
 
   /**
