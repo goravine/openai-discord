@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, MessageMentions, MessageEmbed ,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, MessageMentions, EmbedBuilder ,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -162,13 +162,12 @@ export class Bot implements Runnable {
 				{ role: 'system', content: 'You are a user' },
 				{ role: 'user', content: messageContent }
 			  ];
-
-			// Create the "Thinking..." embed
-			const thinkingEmbed = new MessageEmbed()
+			  
+			const thinkingEmbed = new EmbedBuilder()
 			.setColor('#ff9900')
 			.setDescription('Thinking...');
 			
-  			const thinkingMessage = await message.channel.send(thinkingEmbed);
+  			const thinkingMessage = await message.channel.send(thinkingEmbed.build());
 
             try {
               const response = await axios.post('https://api.openai.com/v1/chat/completions', {
