@@ -91,10 +91,8 @@ export class Api implements AI, Runnable {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
         if (axiosError.response) {
-          this._logger.logService('OpenAI API Error:', (error as AxiosError).data);
-          this._logger.logService('OpenAI API Status:', (error as AxiosError).status);
-          this._logger.logService('OpenAI API Headers:', (error as AxiosError).headers);
-          this._logger.logService('OpenAI API Message:', (error as AxiosError).message);
+          this._logger.logService(`OpenAI API Headers: ${(error as AxiosError).headers}`);
+          this._logger.logService(`OpenAI API Message: ${(error as AxiosError).message}`);
         }
       }
       throw error;
