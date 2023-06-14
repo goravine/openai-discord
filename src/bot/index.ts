@@ -144,15 +144,20 @@ export class Bot implements Runnable {
         console.log("someone asked the AI : " + messageContent);
         // Check if there is any remaining content after removing the mention
         if (messageContent) {
-          // Call the /chat command and send the message content
-          const response = await this.handleSlashCommand({
-            content: messageContent,
-            user: message.author,
-            guild: message.guild,
-            channel: message.channel,
-            isCommand: () => true,
-            isChatInputCommand: () => true,
+          const commandInteraction = new CommandInteraction(this._client, {
+            id: message.id,
+            type: 'CHAT_INPUT',
+            commandName: 'chat',
+            options: [
+              {
+                name: 'message',
+                value: messageContent,
+              },
+            ],
           });
+    
+          // Call the /chat command using the CommandInteraction
+          const response = await this.handleSlashCommand(commandInteraction);
     
           // Send the response back to the channel
           message.channel.send(response);
