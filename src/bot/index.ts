@@ -147,27 +147,30 @@ export class Bot implements Runnable {
         // Check if there is any remaining content after removing the mention
         if (messageContent) {
           // Find the slash command that corresponds to the /chat command
-          const command = this._client.commands.find((cmd: any) => cmd.name === 'chat');
+          const command = this._client.application.commands.cache.find((cmd: any) => cmd.name === 'chat');
     
-          // Create a mock command interaction
-          const interaction = {
-            commandName: command.name,
-            options: [
-              {
-                name: 'message',
-                value: messageContent,
-              },
-            ],
-            execute: async (commandFn: any) => {
-              await commandFn();
-            },
-          };
+          // Check if the command is found
+          if (command) {
+            // Create a mock command interaction
+            const interaction = {
+              commandId: command.id,
+              commandName: command.name,
+              channelId: message.channel.id,
+              guildId: message.guild.id,
+              options: [
+                {
+                  name: 'message',
+                  value: messageContent,
+                },
+              ],
+            };
     
-          // Call the handleSlashCommand function by executing the command interaction
-          const response = await this.handleSlashCommand(interaction.execute.bind(interaction));
+            // Call the handleSlashCommand function by passing the mock interaction
+            const response = await this.handleSlashCommand(interaction);
     
-          // Send the response back to the channel
-          message.channel.send(response);
+            // Send the response back to the channel
+            message.channel.send(response);
+          }
         }
       }
     });
