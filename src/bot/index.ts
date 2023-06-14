@@ -150,9 +150,9 @@ export class Bot implements Runnable {
           const command = this._client.application.commands.cache.find((cmd: any) => cmd.name === 'chat');
     
           // Check if the command is found
-          if (command != null) {
+          if (command) {
             // Create a mock command interaction
-            const interaction = {
+            const interaction: any = {
               commandId: command.id,
               commandName: command.name,
               channelId: message.channel.id,
@@ -166,19 +166,13 @@ export class Bot implements Runnable {
             };
     
             // Call the handleSlashCommand function by passing the mock interaction
-            const response = await this.handleSlashCommand(interaction);
+            const response = await this.handleSlashCommand(interaction as CommandInteraction);
     
             // Send the response back to the channel
             message.channel.send(response);
           }
-          else
-          {
-            message.channel.send("GAGAL BRO");
-          }
         }
       }
     });
-    
-    
   }
 }
