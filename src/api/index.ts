@@ -64,6 +64,8 @@ export class Api implements AI, Runnable {
    * @param chatHistory - Chat history to generate completion from
    * @returns {ChatCompletionResponseMessage} - Chat completion response object containing the completion
    */
+  public conversationId = '';
+
   async chatCompletion(chatHistory: ChatCompletionRequestMessage[]): Promise<ChatCompletionResponseMessage> {
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -73,12 +75,16 @@ export class Api implements AI, Runnable {
         temperature: 0.5, // Adjust the temperature for response generation
         frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
         presence_penalty: 0.4, // Adjust the presence penalty for response generation
+        context: this.conversationId // Include the conversation ID in the request
       }, {
         headers: {
           'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
           'Content-Type': 'application/json'
         }
       });
+
+      // Update the conversation ID for subsequent requests
+      this.conversationId = response.data.id;
   
       return response.data.choices[0].message as ChatCompletionResponseMessage;
     } catch (error: any) {
