@@ -79,11 +79,11 @@ export class Api implements AI, Runnable {
         return response.data.choices[0].message;
       })
       .catch((error: Error) => {
-        if (error && error.headers) {
+        if (error.isAxiosError && error.response && error.response.headers) {
           // Print rate limit headers from the error response
-          console.log('Rate Limit Remaining:', error.headers['x-ratelimit-remaining']);
-          console.log('Rate Limit Reset:', error.headers['x-ratelimit-reset']);
-          console.log('Rate Limit Limit:', error.headers['x-ratelimit-limit']);
+          this._logger.logService.error('Rate Limit Remaining:', error.response.headers['x-ratelimit-remaining']);
+          this._logger.logService.error('Rate Limit Reset:', error.response.headers['x-ratelimit-reset']);
+          this._logger.logService.error('Rate Limit Limit:', error.response.headers['x-ratelimit-limit']);
         }
         this._logger.logService.error(`Failed to get chat completion: ${error.message}`); // Request failed
         throw error;
