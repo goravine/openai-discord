@@ -10,8 +10,6 @@ import process from 'process';
 import { AI } from '@/models/ai';
 import { Runnable } from '@/models/runnable';
 import { Logger } from '@/logger';
-import axios, { AxiosError } from 'axios';
-
 
 export class Api implements AI, Runnable {
   /**
@@ -42,6 +40,7 @@ export class Api implements AI, Runnable {
      * Create OpenAI API configuration with API key
      */
     this._configuration = new Configuration({
+      organization: process.env.OPENAI_ORGANIZATION_ID,
       apiKey: process.env.OPENAI_API_KEY,
     });
   }
@@ -64,27 +63,27 @@ export class Api implements AI, Runnable {
    * @param chatHistory - Chat history to generate completion from
    * @returns {ChatCompletionResponseMessage} - Chat completion response object containing the completion
    */
-  async chatCompletion(chatHistory: ChatCompletionRequestMessage[]): Promise<ChatCompletionResponseMessage> {
-    try {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: process.env.MODEL_NAME + '',
-        messages: chatHistory,
-        max_tokens: 100, // Adjust the maximum number of tokens per request
-        temperature: 0.8, // Adjust the temperature for response generation
-        frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
-        presence_penalty: 0.4, // Adjust the presence penalty for response generation
-      }, {
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      });
-  
-      return response.data.choices[0].message as ChatCompletionResponseMessage;
-    } catch (error: any) {
-      console.error(`Failed to get chat completion: ${(error as AxiosError).message}`);
-      throw error;
+  async chatCompletion(chatHistory: ChatCompletionRequestMessage[])
+    : Promise<ChatCompletionResponseMessage> {
+    /**
+     * Create chat completion request and return response or throw error
+     */
+    const request = await this._api.createChatCompletion({
+      model: process.env.MODEL_NAME + '',
+      messages: chatHistory,
+      maxTokens: 2048,
+      max_tokens: 100, // Adjust the maximum number of tokens per request
+      temperature: 0.8, // Adjust the temperature for response generation
+      frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
+      presence_penalty: 0.4, // Adjust the presence penalty for response generation
     }
+    }).then((response) => response.data.choices[0].message)
+      .catch((error: Error) => {
+        this._logger.logService.error(`Failed to get chat completion: ${error.message}`); // Request failed
+        throw error;
+      });
+
+    return (request as ChatCompletionResponseMessage);
   }
 
   /**
