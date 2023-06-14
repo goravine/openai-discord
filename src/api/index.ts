@@ -67,24 +67,22 @@ export class Api implements AI, Runnable {
     /**
      * Create chat completion request and return response or throw error
      */
-    const request = await this._api.createChatCompletion({
-      model: process.env.MODEL_NAME + '',
-      messages: chatHistory,
-      max_tokens: 100, // Adjust the maximum number of tokens per request
-      temperature: 0.8, // Adjust the temperature for response generation
-      frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
-      presence_penalty: 0.4, // Adjust the presence penalty for response generation  
-    })
+      const request = await this._api.createChatCompletion({
+        model: process.env.MODEL_NAME + '',
+        messages: chatHistory,
+        max_tokens: 100, // Adjust the maximum number of tokens per request
+        temperature: 0.8, // Adjust the temperature for response generation
+        frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
+        presence_penalty: 0.4, // Adjust the presence penalty for response generation  
+      })
       .then((response) => {
-        response.data.choices[0].message
-        // Print rate limit headers
-        console.log('Rate Limit Remaining:', response.headers['x-ratelimit-remaining']);
-        console.log('Rate Limit Reset:', response.headers['x-ratelimit-reset']);
-        console.log('Rate Limit Limit:', response.headers['x-ratelimit-limit']);
-    
         return response.data.choices[0].message;
       })
       .catch((error: Error) => {
+        
+        this._logger.logService.error('Rate Limit Remaining:', error.headers['x-ratelimit-remaining']);
+        this._logger.logService.error('Rate Limit Reset:', error.headers['x-ratelimit-reset']);
+        this._logger.logService.error('Rate Limit Limit:', error.headers['x-ratelimit-limit']);
         this._logger.logService.error(`Failed to get chat completion: ${error.message}`); // Request failed
         throw error;
       });
