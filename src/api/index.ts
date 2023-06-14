@@ -66,7 +66,7 @@ export class Api implements AI, Runnable {
   async chatCompletion(chatHistory: ChatCompletionRequestMessage[]): Promise<ChatCompletionResponseMessage> {
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: process.env.MODEL_NAME,
+        model: process.env.MODEL_NAME + '',
         messages: chatHistory,
         max_tokens: 100, // Adjust the maximum number of tokens per request
         temperature: 0.8, // Adjust the temperature for response generation
