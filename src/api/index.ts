@@ -68,7 +68,7 @@ export class Api implements AI, Runnable {
      * Create chat completion request and return response or throw error
      */
     const request = await this._api.createChatCompletion({
-      model: process.env.MODEL_NAME,
+      model: process.env.MODEL_NAME + '',
       messages: chatHistory,
       limits: {
         maxTokens: 100, // Adjust the maximum number of tokens per request
