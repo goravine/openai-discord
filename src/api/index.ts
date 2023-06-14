@@ -11,7 +11,6 @@ import { AI } from '@/models/ai';
 import { Runnable } from '@/models/runnable';
 import { Logger } from '@/logger';
 import axios, { AxiosError } from 'axios';
-import { uuidv4 } from 'uuid';
 
 export class Api implements AI, Runnable {
   /**
