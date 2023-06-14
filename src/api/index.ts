@@ -11,7 +11,7 @@ import { AI } from '@/models/ai';
 import { Runnable } from '@/models/runnable';
 import { Logger } from '@/logger';
 import axios, { AxiosError } from 'axios';
-const { v4: uuidv4 } = require('uuid');
+import { uuidv4 } from 'uuid';
 
 export class Api implements AI, Runnable {
   /**
@@ -72,7 +72,6 @@ export class Api implements AI, Runnable {
     {
       this.conversationId = uuidv4();
     }
-
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
         model: process.env.MODEL_NAME,
@@ -94,7 +93,7 @@ export class Api implements AI, Runnable {
   
       return response.data.choices[0].message as ChatCompletionResponseMessage;
     } catch (error: any) {
-      this._logger.logService(`OpenAI API Message: ${(error as AxiosError).message}`);
+      this._logger.logService.error(`Failed to get chat completion: ${(error as AxiosError).message}`);
       throw error;
     }
   }
