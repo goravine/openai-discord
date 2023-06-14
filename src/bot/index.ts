@@ -157,10 +157,16 @@ export class Bot implements Runnable {
               this.conversationId = 'AT-CHAT-'+ Date.now() + '';
             }
 
+			// Create an array of message objects
+			const messages = [
+				{ role: 'system', content: 'You are a user' },
+				{ role: 'user', content: messageContent }
+			  ];
+
             try {
               const response = await axios.post('https://api.openai.com/v1/chat/completions', {
                 model: process.env.MODEL_NAME,
-                messages: messageContent,
+                messages: messages,
                 max_tokens: 1024, // Adjust the maximum number of tokens per request
                 temperature: 0.5, // Adjust the temperature for response generation
                 frequency_penalty: 0.6, // Adjust the frequency penalty for response generation
