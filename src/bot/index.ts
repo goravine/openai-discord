@@ -9,6 +9,9 @@ import { commands } from '@/bot/commands';
 import axios, { AxiosError } from 'axios';
 
 export class Bot implements Runnable {
+  // Define a conversation ID map
+  public conversationHistory = new Map<string, Array<{ role: string; content: string }>>();
+
   /**
    * Logger instance
    * @private
@@ -53,10 +56,6 @@ export class Bot implements Runnable {
       ],
     });
   }
-
-	// Define a conversation ID map
-	public conversationHistory = new Map<string, Array<{ role: string; content: string }>>();
-
 
   /**
    * Handle slash commands from Discord API
@@ -167,7 +166,7 @@ export class Bot implements Runnable {
 	  
 			  const responseContent = response.data.choices[0].message.content;
 			  conversation.push({ role: 'user', content: messageContent }); // Move this line below the API request
-			  conversation.push({ role: 'bot', content: responseContent });
+			  conversation.push({ role: 'system', content: responseContent });
 	  
 			  this.conversationHistory.set(channelId, conversation);
 	  
@@ -182,7 +181,5 @@ export class Bot implements Runnable {
 		  }
 		}
 	  });
-	  
-
   }
 }
