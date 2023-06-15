@@ -159,6 +159,7 @@ export class Bot implements Runnable {
     try {
       // Retrieve token usage information
       const todayDateTime = this.getTodayDateTime();
+      console.log(todayDateTime);
       const usageResponse = await axios.get('https://api.openai.com/v1/usage?date='+todayDateTime, {
         headers: {
           'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
