@@ -14,8 +14,7 @@ ENV MODEL_NAME=$MODEL_NAME
 COPY yarn.lock ./
 COPY package*.json ./
 COPY tsconfig*.json ./
-RUN yarn install --frozen-lockfile
-RUN yarn add ytdl-core
+RUN yarn install
 COPY . ./
 RUN yarn run build
 
@@ -25,7 +24,7 @@ COPY --from=ts-compiler /usr/app/yarn.lock ./
 COPY --from=ts-compiler /usr/app/package*.json ./
 COPY --from=ts-compiler /usr/app/dist ./
 ENV NODE_ENV=production
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 FROM node:18-slim
 WORKDIR /usr/app
