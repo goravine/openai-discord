@@ -252,14 +252,9 @@ export class Bot implements Runnable {
       }
   
       try {
-        const connection = await voiceChannel.connect();
-        if (!connection) {
-          message.reply('Failed to join the voice channel.');
-          return;
-        }
-  
+        await client.join(voiceChannel);
         const stream = ytdl(args[1], { filter: 'audioonly' });
-        const dispatcher = connection.play(stream);
+        const dispatcher = client.play(stream);
   
         dispatcher.on('start', () => {
           message.reply('Playing the song...');
@@ -267,13 +262,13 @@ export class Bot implements Runnable {
   
         dispatcher.on('finish', () => {
           message.reply('Song finished.');
-          connection.disconnect();
+          client.disconnect();
         });
   
         dispatcher.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
-          connection.disconnect();
+          client.disconnect();
         });
       } catch (error) {
         console.error(error);
