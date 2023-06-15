@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, Guild, Discord
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -245,37 +245,47 @@ export class Bot implements Runnable {
         return;
       }
   
-      const voiceChannel = message.member?.guild.channel;
+      const voiceChannel = message.member?.voice.channel;
       if (!voiceChannel) {
         message.reply('You must be in a voice channel to use this command.');
         return;
       }
   
       try {
-        const voiceConnection = await voiceChannel.join();
-        const stream = ytdl(args[1], { filter: 'audioonly' });
-        const dispatcher = voiceConnection.play(stream);
+        // Create a new player.
+        const player = new Discord.Player(this._client, message.guild);
+
+        // Use YTDL to download the song.
+        const song = await ytdl.getInfo(args[1]);
+
+        // Add the song to the player's queue.
+        player.queue.push(song);
+
+        // Join the voice channel that the message was sent in.
+        await player.join(voiceChannel);
+
+        // Play the song.
+        player.play();
   
-        dispatcher.on('start', () => {
+        player.on('start', () => {
           message.reply('Playing the song...');
         });
   
-        dispatcher.on('finish', () => {
+        player.on('finish', () => {
           message.reply('Song finished.');
-          voiceConnection.disconnect();
+          player.disconnect();
         });
   
-        dispatcher.on('error', (error: any) => {
+        player.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
-          voiceConnection.disconnect();
+          player.disconnect();
         });
+        
       } catch (error) {
         console.error(error);
         message.reply('An error occurred while connecting to the voice channel.');
       }
     }
   }
-  
-  
 }
