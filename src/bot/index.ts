@@ -165,8 +165,8 @@ export class Bot implements Runnable {
       });
   
       // Display chat completion message and remaining token balance
-      await message.channel.send('Remaining tokens: ' + JSON.stringify(usageResponse.data));
-      const maxChunkLength = 2000; // Maximum length for each chunk
+      //await message.channel.send('Remaining tokens: ' + JSON.stringify(usageResponse.data));
+      const maxChunkLength = 1500; // Maximum length for each chunk
 
       if (usageResponse.data.length <= maxChunkLength) {
         // If the message content fits within a single chunk, send it directly
