@@ -15,7 +15,8 @@ import {
 	entersState,
 	StreamType,
 	AudioPlayerStatus,
-	VoiceConnectionStatus, } from "@discordjs/voice";
+	VoiceConnectionStatus,
+  DiscordJSAdapter, } from "@discordjs/voice";
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
@@ -231,7 +232,7 @@ export class Bot implements Runnable {
     const connection = joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
-      //adapterCreator: createDiscordJSAdapter(channel),
+      adapterCreator: this.createDiscordJSAdapter(channel),
     });
     try {
       await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
@@ -240,5 +241,19 @@ export class Bot implements Runnable {
       connection.destroy();
       throw error;
     }
+  }
+
+  public createDiscordJSAdapter(channel: VoiceBasedChannel): DiscordJSAdapter {
+    const adapter = new DiscordJSAdapter(channel);
+    adapter.on('connect', () => {
+      console.log('Connected to voice channel.');
+    });
+    adapter.on('disconnect', () => {
+      console.log('Disconnected from voice channel.');
+    });
+    adapter.on('error', (error) => {
+      console.error('Error occurred while communicating with Discord voice server.', error);
+    });
+    return adapter;
   }
 }
