@@ -245,14 +245,14 @@ export class Bot implements Runnable {
         return;
       }
   
-      const voiceChannel = message.member?.voice.channel;
+      const voiceChannel = message.member?.guild.channel;
       if (!voiceChannel) {
         message.reply('You must be in a voice channel to use this command.');
         return;
       }
   
       try {
-        const voiceConnection = await message.member.voice.channel.join();
+        const voiceConnection = await voiceChannel.join();
         const stream = ytdl(args[1], { filter: 'audioonly' });
         const dispatcher = voiceConnection.play(stream);
   
