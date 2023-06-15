@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, VoiceChannel, VoiceBasedChannel,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -7,32 +7,43 @@ import { Runnable } from '@/models/runnable';
 import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
 import axios , {AxiosError } from 'axios';
-import ytdl from 'ytdl-core';
-import { 
-	joinVoiceChannel,
-	createAudioPlayer,
-	createAudioResource,
-	entersState,
-	StreamType,
-	AudioPlayerStatus,
-  VoiceConnection, } from "@discordjs/voice";
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
 	public conversationHistory = new Map<string, Array<{ role: string, content: string }>>();
-  
+	
+  /**
+   * Logger instance
+   * @private
+   * @readonly
+   */
   private readonly _logger: Logger;
-  
+
+  /**
+   * AI instance
+   * @private
+   * @readonly
+   */
   private readonly _ai: AI;
-  
+
+  /**
+   * Discord API client instance
+   * @private
+   * @readonly
+   */
   private readonly _client: Client;
-  
-  public player = createAudioPlayer();
-  
+
+  /**
+   * Create Bot instance
+   * @param ai - OpenAI API instance to use for all AI related tasks
+   */
   constructor(ai: AI) {
     this._logger = new Logger(Bot.name);
     this._ai = ai;
-    
+
+    /**
+     * Create Discord API client instance with intents and partials
+     */
     this._client = new Client({
       intents: [
         IntentsBitField.Flags.Guilds,
@@ -46,7 +57,15 @@ export class Bot implements Runnable {
     });
   }
 
+  /**
+   * Handle slash commands from Discord API
+   * @param interaction - Interaction from Discord API to handle as slash command (e.g. /help)
+   * @private
+   */
   private async handleSlashCommand(interaction: CommandInteraction): Promise<void> {
+    /**
+     * Find command by name and execute it if found or return error message
+     */
     const slashCommand = commands.find((command) => command.data.name === interaction.commandName);
     if (!slashCommand) {
       this._logger.logService.warning(`SlashCommand [${interaction.commandName}] not found.`);
@@ -58,7 +77,13 @@ export class Bot implements Runnable {
     await slashCommand.execute(this._client, interaction, this._ai); // Execute command
   }
 
+  /**
+   * Initialize Discord API service
+   */
   run(): void {
+    /**
+     * Login to Discord API and set status for show command if login was successful or exit process if failed
+     */
     this._client.login(process.env.DISCORD_API_KEY).then(() => {
       this._logger.logService.info('Discord Client has been initialized successfully.'); // Log service initialization
     }).catch((error) => {
@@ -67,10 +92,16 @@ export class Bot implements Runnable {
     });
 
     this._client.on('ready', async () => {
+      /**
+       * Check if user and application are available before continue
+       */
       if (!this._client.user || !this._client.application) {
         return;
       }
-      
+
+      /**
+       * Create Discord API REST instance and register slash commands if successful or exit process if failed
+       */
       try {
         const availableCommands = commands.map((command) => command.data.toJSON());
         const rest = new REST().setToken(process.env.DISCORD_API_KEY as string);
@@ -85,21 +116,33 @@ export class Bot implements Runnable {
         this._logger.logService.error(`Failed to start Discord API REST: ${error}`);
         process.exit(1); // Exit process
       }
-      
+
+      /**
+       * Set activity status for show command
+       
+      this._client.user?.setActivity({
+        name: '/help',
+        type: ActivityType.Listening,
+      });*/
       this._client.user?.setActivity({name: 'VALORANT', type: ActivityType.Playing });
     });
-    
+
+    /**
+     *  On interaction create event handler
+     */
     this._client.on('interactionCreate', async (interaction: Interaction) => {
-      
+      /**
+       * Check if interaction is command or chat input command
+       */
       if (interaction.isCommand() || interaction.isChatInputCommand()) {
         await this.handleSlashCommand(interaction); // Handle slash command
       }
     });
-    
-  this._client.on('messageCreate', async (message: any) => {
-    //play music function
-    this.playMusic(message);
 
+	/**
+     *  On interaction create event handler
+     */
+  this._client.on('messageCreate', async (message: any) => {
     if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
       const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
       if (messageContent) {
@@ -188,43 +231,5 @@ export class Bot implements Runnable {
     }
   
     return chunks;
-  }
-
-  public async playMusic(message: any) {
-    if (message.content.startsWith('/play')) {
-      const args = message.content.split(' ');
-      if (args.length < 2) {
-        message.reply('Please provide a YouTube URL.');
-        return;
-      }
-  
-      const voiceChannel = message.member?.voice.channel;
-      if (!voiceChannel) {
-        message.reply('You must be in a voice channel to use this command.');
-        return;
-      }
-  
-      try 
-      {
-        const connection = new VoiceConnection(voiceChannel);
-        connection.joinVoiceChannel();
-				connection.subscribe(this.player);
-        this.playSong(args[1]);
-
-      } catch (error) {
-        console.error(error);
-        message.reply('An error occurred while connecting to the voice channel.');
-      }
-    }
-  }
-
-  public playSong(url : string) {
-    const resource = createAudioResource(url, {
-      inputType: StreamType.Arbitrary,
-    });
-  
-    this.player.play(resource);
-  
-    return entersState(this.player, AudioPlayerStatus.Playing, 5000);
   }
 }
