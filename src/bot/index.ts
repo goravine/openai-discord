@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, Guild, Player
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -8,6 +8,7 @@ import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
 import axios , {AxiosError } from 'axios';
 import ytdl from 'ytdl-core';
+import { joinVoiceChannel } from "@discordjs/voice";
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
@@ -252,36 +253,28 @@ export class Bot implements Runnable {
       }
   
       try {
-        // Create a new player.
-        const player = new Player(this._client, message.guild);
-
-        // Use YTDL to download the song.
-        const song = await ytdl.getInfo(args[1]);
-
-        // Add the song to the player's queue.
-        player.queue.push(song);
-
-        // Join the voice channel that the message was sent in.
-        await player.join(voiceChannel);
-
-        // Play the song.
-        player.play();
+        const voiceConnection = await joinVoiceChannel({
+          channelId: voiceChannel.id,
+          guildId: voiceChannel.guild.id,
+          adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+        });
+        const stream = ytdl(args[1], { filter: 'audioonly' });
+        const dispatcher = voiceConnection.play(stream);
   
-        player.on('start', () => {
+        dispatcher.on('start', () => {
           message.reply('Playing the song...');
         });
   
-        player.on('finish', () => {
+        dispatcher.on('finish', () => {
           message.reply('Song finished.');
-          player.disconnect();
+          voiceConnection.disconnect();
         });
   
-        player.on('error', (error: any) => {
+        dispatcher.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
-          player.disconnect();
+          voiceConnection.disconnect();
         });
-        
       } catch (error) {
         console.error(error);
         message.reply('An error occurred while connecting to the voice channel.');
