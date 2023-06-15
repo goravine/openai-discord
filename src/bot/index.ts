@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, Intents, VoiceChannel, VoiceBasedChannel,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, VoiceChannel, VoiceBasedChannel,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -20,41 +20,19 @@ import {
 export class Bot implements Runnable {
 	// Define a conversation ID map
 	public conversationHistory = new Map<string, Array<{ role: string, content: string }>>();
-	
-  /**
-   * Logger instance
-   * @private
-   * @readonly
-   */
+  
   private readonly _logger: Logger;
-
-  /**
-   * AI instance
-   * @private
-   * @readonly
-   */
+  
   private readonly _ai: AI;
-
-  /**
-   * Discord API client instance
-   * @private
-   * @readonly
-   */
+  
   private readonly _client: Client;
   
   public player = createAudioPlayer();
-
-  /**
-   * Create Bot instance
-   * @param ai - OpenAI API instance to use for all AI related tasks
-   */
+  
   constructor(ai: AI) {
     this._logger = new Logger(Bot.name);
     this._ai = ai;
-
-    /**
-     * Create Discord API client instance with intents and partials
-     */
+    
     this._client = new Client({
       intents: [
         IntentsBitField.Flags.Guilds,
@@ -65,19 +43,10 @@ export class Bot implements Runnable {
       partials: [
         Partials.Channel, // For DMs
       ],
-      ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] },
     });
   }
 
-  /**
-   * Handle slash commands from Discord API
-   * @param interaction - Interaction from Discord API to handle as slash command (e.g. /help)
-   * @private
-   */
   private async handleSlashCommand(interaction: CommandInteraction): Promise<void> {
-    /**
-     * Find command by name and execute it if found or return error message
-     */
     const slashCommand = commands.find((command) => command.data.name === interaction.commandName);
     if (!slashCommand) {
       this._logger.logService.warning(`SlashCommand [${interaction.commandName}] not found.`);
@@ -89,13 +58,7 @@ export class Bot implements Runnable {
     await slashCommand.execute(this._client, interaction, this._ai); // Execute command
   }
 
-  /**
-   * Initialize Discord API service
-   */
   run(): void {
-    /**
-     * Login to Discord API and set status for show command if login was successful or exit process if failed
-     */
     this._client.login(process.env.DISCORD_API_KEY).then(() => {
       this._logger.logService.info('Discord Client has been initialized successfully.'); // Log service initialization
     }).catch((error) => {
@@ -104,16 +67,10 @@ export class Bot implements Runnable {
     });
 
     this._client.on('ready', async () => {
-      /**
-       * Check if user and application are available before continue
-       */
       if (!this._client.user || !this._client.application) {
         return;
       }
-
-      /**
-       * Create Discord API REST instance and register slash commands if successful or exit process if failed
-       */
+      
       try {
         const availableCommands = commands.map((command) => command.data.toJSON());
         const rest = new REST().setToken(process.env.DISCORD_API_KEY as string);
@@ -128,32 +85,17 @@ export class Bot implements Runnable {
         this._logger.logService.error(`Failed to start Discord API REST: ${error}`);
         process.exit(1); // Exit process
       }
-
-      /**
-       * Set activity status for show command
-       
-      this._client.user?.setActivity({
-        name: '/help',
-        type: ActivityType.Listening,
-      });*/
+      
       this._client.user?.setActivity({name: 'VALORANT', type: ActivityType.Playing });
     });
-
-    /**
-     *  On interaction create event handler
-     */
+    
     this._client.on('interactionCreate', async (interaction: Interaction) => {
-      /**
-       * Check if interaction is command or chat input command
-       */
+      
       if (interaction.isCommand() || interaction.isChatInputCommand()) {
         await this.handleSlashCommand(interaction); // Handle slash command
       }
     });
-
-	/**
-     *  On interaction create event handler
-     */
+    
   this._client.on('messageCreate', async (message: any) => {
     //play music function
     this.playMusic(message);
@@ -286,39 +228,15 @@ export class Bot implements Runnable {
   }
 
   public async connectToChannel(channel: VoiceBasedChannel) {
-    /**
-     * Here, we try to establish a connection to a voice channel. If we're already connected
-     * to this voice channel, @discordjs/voice will just return the existing connection for us!
-     */
     const connection = joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
       //adapterCreator: createDiscordJSAdapter(channel),
     });
-  
-    /**
-     * If we're dealing with a connection that isn't yet Ready, we can set a reasonable
-     * time limit before giving up. In this example, we give the voice connection 30 seconds
-     * to enter the ready state before giving up.
-     */
     try {
-      /**
-       * Allow ourselves 30 seconds to join the voice channel. If we do not join within then,
-       * an error is thrown.
-       */
       await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
-      /**
-       * At this point, the voice connection is ready within 30 seconds! This means we can
-       * start playing audio in the voice channel. We return the connection so it can be
-       * used by the caller.
-       */
       return connection;
     } catch (error) {
-      /**
-       * At this point, the voice connection has not entered the Ready state. We should make
-       * sure to destroy it, and propagate the error by throwing it, so that the calling function
-       * is aware that we failed to connect to the channel.
-       */
       connection.destroy();
       throw error;
     }
