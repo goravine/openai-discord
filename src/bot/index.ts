@@ -238,8 +238,8 @@ export class Bot implements Runnable {
   }
 
   public async playMusic(message: any) {
-    if (message.startsWith('/play')) {
-      const args = message.split(' ');
+    if (message.content.startsWith('/play')) {
+      const args = message.content.split(' ');
       if (args.length < 2) {
         message.reply('Please provide a YouTube URL.');
         return;
