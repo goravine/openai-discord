@@ -252,7 +252,7 @@ export class Bot implements Runnable {
       }
   
       try {
-        const voiceConnection = await voiceChannel.join();
+        const voiceConnection = await message.member.voice.channel.join();
         const stream = ytdl(args[1], { filter: 'audioonly' });
         const dispatcher = voiceConnection.play(stream);
   
