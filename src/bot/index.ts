@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, voiceChannel,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, VoiceChannel,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
