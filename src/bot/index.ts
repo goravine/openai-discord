@@ -144,7 +144,57 @@ export class Bot implements Runnable {
      */
   this._client.on('messageCreate', async (message: any) => {
     if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
-      const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
+      this.openAIConversation(message);
+    }
+    
+    if (message.content.contain("!usage"))
+    {
+    }
+  });
+  
+  }
+
+  public async checkRemainingBalance(message: any) {
+    const channelId = message.channel.id;
+    try {
+      // Retrieve token usage information
+      const usageResponse = await axios.get('https://api.openai.com/v1/usage', {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+      });
+  
+      const { total_tokens, usage } = usageResponse.data;
+  
+      // Make a chat completion request
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: process.env.MODEL_NAME,
+          temperature: 0.5,
+          frequency_penalty: 0.6,
+          presence_penalty: 0.4,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+            'Conversation-ID': channelId,
+          },
+        }
+      );
+  
+      // Display chat completion message and remaining token balance
+      await message.channel.send(`Remaining tokens: ${total_tokens - usage}`);
+      await message.channel.send(response.data.choices[0].message.content);
+    } catch (error: any) {
+      message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
+    }
+  }
+
+  public async openAIConversation(message : any)
+  {
+    const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
       if (messageContent) {
         const channelId = message.channel.id;
         let conversation = this.conversationHistory.get(channelId);
@@ -207,9 +257,6 @@ export class Bot implements Runnable {
       } else {
         message.channel.send("ERROR: No message content provided.");
       }
-    }
-  });
-  
   }
 
   public chunkConversation(conversation: any[], tokensPerChunk: number): any[][] {
