@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, Intents, VoiceChannel, VoiceBasedChannel,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -8,7 +8,14 @@ import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
 import axios , {AxiosError } from 'axios';
 import ytdl from 'ytdl-core';
-import { joinVoiceChannel } from "@discordjs/voice";
+import { 
+	joinVoiceChannel,
+	createAudioPlayer,
+	createAudioResource,
+	entersState,
+	StreamType,
+	AudioPlayerStatus,
+	VoiceConnectionStatus, } from "@discordjs/voice";
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
@@ -34,6 +41,8 @@ export class Bot implements Runnable {
    * @readonly
    */
   private readonly _client: Client;
+  
+  public player = createAudioPlayer();
 
   /**
    * Create Bot instance
@@ -56,6 +65,7 @@ export class Bot implements Runnable {
       partials: [
         Partials.Channel, // For DMs
       ],
+      ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] },
     });
   }
 
@@ -252,33 +262,79 @@ export class Bot implements Runnable {
         return;
       }
   
-      try {
-        const voiceConnection = await joinVoiceChannel({
-          channelId: voiceChannel.id,
-          guildId: voiceChannel.guild.id,
-          adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-        });
-        const stream = ytdl(args[1], { filter: 'audioonly' });
-        const dispatcher = voiceConnection.play(stream);
+      try 
+      {
+        const connection = await this.connectToChannel(voiceChannel);
+				connection.subscribe(this.player);
+				message.reply('Playing now!');
   
-        dispatcher.on('start', () => {
+        connection.on('start', () => {
           message.reply('Playing the song...');
         });
   
-        dispatcher.on('finish', () => {
+        connection.on('finish', () => {
           message.reply('Song finished.');
-          voiceConnection.disconnect();
+          connection.disconnect();
         });
   
-        dispatcher.on('error', (error: any) => {
+        connection.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
-          voiceConnection.disconnect();
+          connection.disconnect();
         });
       } catch (error) {
         console.error(error);
         message.reply('An error occurred while connecting to the voice channel.');
       }
+    }
+  }
+
+  public playSong() {
+    const resource = createAudioResource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', {
+      inputType: StreamType.Arbitrary,
+    });
+  
+    this.player.play(resource);
+  
+    return entersState(this.player, AudioPlayerStatus.Playing, 5000);
+  }
+
+  public async connectToChannel(channel: VoiceBasedChannel) {
+    /**
+     * Here, we try to establish a connection to a voice channel. If we're already connected
+     * to this voice channel, @discordjs/voice will just return the existing connection for us!
+     */
+    const connection = joinVoiceChannel({
+      channelId: channel.id,
+      guildId: channel.guild.id,
+      //adapterCreator: createDiscordJSAdapter(channel),
+    });
+  
+    /**
+     * If we're dealing with a connection that isn't yet Ready, we can set a reasonable
+     * time limit before giving up. In this example, we give the voice connection 30 seconds
+     * to enter the ready state before giving up.
+     */
+    try {
+      /**
+       * Allow ourselves 30 seconds to join the voice channel. If we do not join within then,
+       * an error is thrown.
+       */
+      await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
+      /**
+       * At this point, the voice connection is ready within 30 seconds! This means we can
+       * start playing audio in the voice channel. We return the connection so it can be
+       * used by the caller.
+       */
+      return connection;
+    } catch (error) {
+      /**
+       * At this point, the voice connection has not entered the Ready state. We should make
+       * sure to destroy it, and propagate the error by throwing it, so that the calling function
+       * is aware that we failed to connect to the channel.
+       */
+      connection.destroy();
+      throw error;
     }
   }
 }
