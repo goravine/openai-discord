@@ -15,8 +15,6 @@ import {
 	entersState,
 	StreamType,
 	AudioPlayerStatus,
-	VoiceConnectionStatus,
-  DiscordGatewayAdapterCreator,
   VoiceConnection, } from "@discordjs/voice";
 
 export class Bot implements Runnable {
