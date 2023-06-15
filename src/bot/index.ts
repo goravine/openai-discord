@@ -16,7 +16,7 @@ import {
 	StreamType,
 	AudioPlayerStatus,
 	VoiceConnectionStatus,
-  DiscordJSAdapter, } from "@discordjs/voice";
+  VoiceAdapter, } from "@discordjs/voice";
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
@@ -243,8 +243,8 @@ export class Bot implements Runnable {
     }
   }
 
-  public createDiscordJSAdapter(channel: VoiceBasedChannel): DiscordJSAdapter {
-    const adapter = new DiscordJSAdapter(channel);
+  public createDiscordJSAdapter(channel: VoiceBasedChannel): VoiceAdapter {
+    const adapter = new VoiceAdapter(channel);
     adapter.on('connect', () => {
       console.log('Connected to voice channel.');
     });
