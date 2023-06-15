@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, VoiceChannel,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, VoiceClient,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -253,9 +253,10 @@ export class Bot implements Runnable {
       }
   
       try {
-        await this._client.join(voiceChannel);
+        const voiceClient = <VoiceClient>(this._client);
+        await voiceClient.join(voiceChannel);
         const stream = ytdl(args[1], { filter: 'audioonly' });
-        const dispatcher = this._client.play(stream);
+        const dispatcher = voiceClient.play(stream);
   
         dispatcher.on('start', () => {
           message.reply('Playing the song...');
@@ -263,13 +264,13 @@ export class Bot implements Runnable {
   
         dispatcher.on('finish', () => {
           message.reply('Song finished.');
-          this._client.disconnect();
+          voiceClient.disconnect();
         });
   
         dispatcher.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
-          this._client.disconnect();
+          voiceClient.disconnect();
         });
       } catch (error) {
         console.error(error);
