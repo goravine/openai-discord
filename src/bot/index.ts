@@ -147,8 +147,8 @@ export class Bot implements Runnable {
       this.openAIConversation(message);
     }
     
-    if (message.content.contain("!usage"))
-    {
+    if (message.content.includes('!usage')) {
+      this.checkRemainingBalance(message);
     }
   });
   
