@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, joinVoiceChannel,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -252,7 +252,7 @@ export class Bot implements Runnable {
       }
   
       try {
-        const connection = await voiceChannel.join();
+        const connection = await joinVoiceChannel(voiceChannel);
         if (!connection) {
           message.reply('Failed to join the voice channel.');
           return;
@@ -267,13 +267,13 @@ export class Bot implements Runnable {
   
         dispatcher.on('finish', () => {
           message.reply('Song finished.');
-          voiceChannel.leave();
+          connection.disconnect();
         });
   
         dispatcher.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
-          voiceChannel.leave();
+          connection.disconnect();
         });
       } catch (error) {
         console.error(error);
