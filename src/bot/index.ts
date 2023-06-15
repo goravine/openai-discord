@@ -8,7 +8,6 @@ import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
 import axios , {AxiosError } from 'axios';
 import ytdl from 'ytdl-core';
-import { VoiceClient } from 'discord.js';
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
@@ -253,24 +252,23 @@ export class Bot implements Runnable {
       }
   
       try {
-        const voiceClient = new VoiceClient(this._client);
-        await voiceClient.join(voiceChannel);
+        const voiceConnection = await voiceChannel.join();
         const stream = ytdl(args[1], { filter: 'audioonly' });
-        const dispatcher = voiceClient.play(stream);
-
+        const dispatcher = voiceConnection.play(stream);
+  
         dispatcher.on('start', () => {
           message.reply('Playing the song...');
         });
-
+  
         dispatcher.on('finish', () => {
           message.reply('Song finished.');
-          voiceClient.disconnect();
+          voiceConnection.disconnect();
         });
-
+  
         dispatcher.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
-          voiceClient.disconnect();
+          voiceConnection.disconnect();
         });
       } catch (error) {
         console.error(error);
@@ -278,5 +276,6 @@ export class Bot implements Runnable {
       }
     }
   }
+  
   
 }
