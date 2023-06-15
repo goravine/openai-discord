@@ -266,6 +266,7 @@ export class Bot implements Runnable {
       {
         const connection = await this.connectToChannel(voiceChannel);
 				connection.subscribe(this.player);
+        this.playSong(args[1]);
 				message.reply('Playing now!');
   
         connection.on('start', () => {
@@ -289,8 +290,8 @@ export class Bot implements Runnable {
     }
   }
 
-  public playSong() {
-    const resource = createAudioResource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', {
+  public playSong(url : string) {
+    const resource = createAudioResource(url, {
       inputType: StreamType.Arbitrary,
     });
   
