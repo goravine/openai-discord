@@ -159,7 +159,6 @@ export class Bot implements Runnable {
     try {
       // Retrieve token usage information
       const todayDateTime = this.getTodayDateTime();
-      console.log(todayDateTime);
       const usageResponse = await axios.get('https://api.openai.com/v1/usage?date='+todayDateTime, {
         headers: {
           'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -167,7 +166,7 @@ export class Bot implements Runnable {
       });
   
       // Display chat completion message and remaining token balance
-      await message.channel.send(`Remaining tokens: ` + JSON.stringify(usageResponse, null, 2));
+      await message.channel.send('Remaining tokens: ' + JSON.stringify(usageResponse));
     } 
     catch (error: any) 
     {
