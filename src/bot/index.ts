@@ -267,22 +267,7 @@ export class Bot implements Runnable {
         const connection = await this.connectToChannel(voiceChannel);
 				connection.subscribe(this.player);
         this.playSong(args[1]);
-				message.reply('Playing now!');
-  
-        connection.on('start', () => {
-          message.reply('Playing the song...');
-        });
-  
-        connection.on('finish', () => {
-          message.reply('Song finished.');
-          connection.disconnect();
-        });
-  
-        connection.on('error', (error: any) => {
-          console.error(error);
-          message.reply('An error occurred while playing the song.');
-          connection.disconnect();
-        });
+
       } catch (error) {
         console.error(error);
         message.reply('An error occurred while connecting to the voice channel.');
