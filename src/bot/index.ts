@@ -156,7 +156,7 @@ export class Bot implements Runnable {
           this.conversationHistory.set(channelId, conversation);
         }
   
-        const thinkingMessage = await message.channel.send('Thinking...');
+        var thinkingMessage = await message.channel.send('Thinking...');
         const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
         const tokensPerChunk = 100; // Adjust as needed
   
@@ -191,14 +191,11 @@ export class Bot implements Runnable {
   
             // Delay between sending each response
             setTimeout(async () => {
-              if (i === 0) {
+                //delete old one
                 thinkingMessage.delete();
-              } 
-              else 
-              {
-                responseMessage.delete();
-              }
-              responseMessage = await message.channel.send(`${message.author.toString()} ${allResponse}`);
+
+                //send new one
+                thinkingMessage = await message.channel.send(`${message.author.toString()} ${allResponse}`);
             }, i * 50); // Adjust the delay as needed
           }
   
