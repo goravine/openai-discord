@@ -177,7 +177,7 @@ export class Bot implements Runnable {
       }
       // Display chat completion message and remaining token balance
       await message.channel.send('Data usage for '+ todayDateTime +': ' + JSON.stringify(snapshotSum));
-      await message.channel.send(`Current usage USD: ${usageResponse['current_usage_usd']}`);
+      await message.channel.send(`Current usage USD: ${usageResponse.data['current_usage_usd']}`);
     } 
     catch (error: any) 
     {
