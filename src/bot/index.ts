@@ -159,15 +159,15 @@ export class Bot implements Runnable {
     try {
       // Retrieve token usage information
       const todayDateTime = this.getTodayDateTime();
-      const usageResponse = await axios.get('https://api.openai.com/v1/usage?date='+todayDateTime, {
+      const usageResponse = await axios.get('https://api.openai.com/v1/usage?date=' + todayDateTime, {
         headers: {
           'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         },
       });
-  
+    
       const snapshotSum: { [snapshotId: string]: number } = {};
-
-      for (const entry of usageResponse.data) {
+    
+      for (const entry of usageResponse.data.data) {
         const { snapshot_id, n_generated_tokens_total } = entry;
         if (snapshotSum.hasOwnProperty(snapshot_id)) {
           snapshotSum[snapshot_id] += n_generated_tokens_total;
@@ -175,12 +175,11 @@ export class Bot implements Runnable {
           snapshotSum[snapshot_id] = n_generated_tokens_total;
         }
       }
+    
       // Display chat completion message and remaining token balance
-      await message.channel.send('Data usage for '+ todayDateTime +': ' + JSON.stringify(snapshotSum));
-      await message.channel.send(`Current usage USD: ${usageResponse.data['current_usage_usd']}`);
-    } 
-    catch (error: any) 
-    {
+      await message.channel.send('Data usage for ' + todayDateTime + ': ' + JSON.stringify(snapshotSum));
+      await message.channel.send(`Current usage USD: ${usageResponse.data.current_usage_usd}`);
+    } catch (error: any) {
       message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
     }
   }
