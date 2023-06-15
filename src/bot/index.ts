@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, Guild, Discord
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, Guild, Player
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -253,7 +253,7 @@ export class Bot implements Runnable {
   
       try {
         // Create a new player.
-        const player = new Discord.Player(this._client, message.guild);
+        const player = new Player(this._client, message.guild);
 
         // Use YTDL to download the song.
         const song = await ytdl.getInfo(args[1]);
