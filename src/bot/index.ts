@@ -7,6 +7,7 @@ import { Runnable } from '@/models/runnable';
 import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
 import axios , {AxiosError } from 'axios';
+import ytdl from 'ytdl-core';
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
@@ -143,6 +144,9 @@ export class Bot implements Runnable {
      *  On interaction create event handler
      */
   this._client.on('messageCreate', async (message: any) => {
+    //play music function
+    this.playMusic(message.content);
+
     if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
       const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
       if (messageContent) {
@@ -231,5 +235,46 @@ export class Bot implements Runnable {
     }
   
     return chunks;
+  }
+
+  public async playMusic(message : any)
+  {
+    if (message.startsWith('/play')) {
+      const args = message.split(' ');
+      if (args.length < 2) {
+        message.reply('Please provide a YouTube URL.');
+        return;
+      }
+      
+      const voiceChannel = message.member?.voice.channel;
+      if (!voiceChannel) {
+        message.reply('You must be in a voice channel to use this command.');
+        return;
+      }
+      
+      try {
+        const connection = await voiceChannel.join();
+        const stream = ytdl(args[1], { filter: 'audioonly' });
+        const dispatcher = connection.play(stream);
+  
+        dispatcher.on('start', () => {
+          message.reply('Playing the song...');
+        });
+  
+        dispatcher.on('finish', () => {
+          message.reply('Song finished.');
+          voiceChannel.leave();
+        });
+  
+        dispatcher.on('error', (error : any) => {
+          console.error(error);
+          message.reply('An error occurred while playing the song.');
+          voiceChannel.leave();
+        });
+      } catch (error) {
+        console.error(error);
+        message.reply('An error occurred while connecting to the voice channel.');
+      }
+    }
   }
 }
