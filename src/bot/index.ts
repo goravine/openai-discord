@@ -207,7 +207,7 @@ export class Bot implements Runnable {
       try 
       {
         const connection = new VoiceConnection(voiceChannel);
-        connection.join();
+        connection.joinVoiceChannel();
 				connection.subscribe(this.player);
         this.playSong(args[1]);
 
