@@ -142,68 +142,93 @@ export class Bot implements Runnable {
 	/**
      *  On interaction create event handler
      */
-    this._client.on('messageCreate', async (message: any) => {
-		if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
-		  const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
-		  if (messageContent) {
-			const channelId = message.channel.id;
-			let conversation = this.conversationHistory.get(channelId);
-			if (!conversation) {
-			  conversation = [{ role: 'user', content: messageContent }];
-			  this.conversationHistory.set(channelId, conversation);
-			}
-			else
-			{
-				conversation.push({ role: 'user', content: messageContent });
-				this.conversationHistory.set(channelId, conversation);
-			}
-	  
-			const thinkingMessage = await message.channel.send('Thinking...');
-			const max_token = parseInt(process.env.MAX_TOKEN ?? '1024');
+  this._client.on('messageCreate', async (message: any) => {
+    if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
+      const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
+      if (messageContent) {
+        const channelId = message.channel.id;
+        let conversation = this.conversationHistory.get(channelId);
+        if (!conversation) {
+          conversation = [{ role: 'user', content: messageContent }];
+          this.conversationHistory.set(channelId, conversation);
+        } else {
+          conversation.push({ role: 'user', content: messageContent });
+          this.conversationHistory.set(channelId, conversation);
+        }
+  
+        const thinkingMessage = await message.channel.send('Thinking...');
+        const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
+        const tokensPerChunk = 100; // Adjust as needed
+        
+        console.log("MAX TOKEN : " + maxToken);
+        try {
+          const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
+          let responseContent = '';
+  
+          for (const chunk of conversationChunks) {
+            const response = await axios.post(
+              'https://api.openai.com/v1/chat/completions',
+              {
+                model: process.env.MODEL_NAME,
+                messages: chunk,
+                max_tokens: maxToken,
+                temperature: 0.5,
+                frequency_penalty: 0.6,
+                presence_penalty: 0.4,
+              },
+              {
+                headers: {
+                  'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                  'Content-Type': 'application/json',
+                  'Conversation-ID': channelId,
+                },
+              }
+            );
+  
+            responseContent += response.data.choices[0].message.content;
+          }
+  
+          conversation.push({ role: 'system', content: responseContent });
+  
+          // Limit the conversation length
+          if (conversation.length > 10) {
+            conversation.shift(); // Remove the oldest message
+            conversation.shift(); // Remove the oldest message
+          }
+  
+          this.conversationHistory.set(channelId, conversation);
+  
+          await message.channel.send(`${message.author.toString()} ${responseContent}`);
+          thinkingMessage.delete();
+        } catch (error: any) {
+          message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
+          thinkingMessage.delete();
+        }
+      } else {
+        message.channel.send("ERROR: No message content provided.");
+      }
+    }
+  });
+  }
 
-			console.log("MAX TOKEN : " + max_token);
-			try {
-			  const response = await axios.post(
-				'https://api.openai.com/v1/chat/completions',
-				{
-				  model: process.env.MODEL_NAME,
-				  messages: conversation, // Update to include complete conversation history
-				  max_tokens: max_token,
-				  temperature: 0.5,
-				  frequency_penalty: 0.6,
-				  presence_penalty: 0.4,
-				},
-				{
-				  headers: {
-					'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-					'Content-Type': 'application/json',
-					'Conversation-ID': channelId,
-				  },
-				}
-			  );
-	  
-			  const responseContent = response.data.choices[0].message.content;
-			  conversation.push({ role: 'system', content: responseContent });
-	  
-			  // Limit the conversation length
-			  if (conversation.length > 10) 
-			  {
-				conversation.shift(); // Remove the oldest message
-				conversation.shift(); // Remove the oldest message
-			  }
-
-			  this.conversationHistory.set(channelId, conversation);
-	  
-			  await message.channel.send(`${message.author.toString()} ${responseContent}`);
-			  thinkingMessage.delete();
-			} catch (error: any) {
-			  message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
-			  thinkingMessage.delete();
-			}
-		  } else {
-			message.channel.send("ERROR: No message content provided.");
-		  }
-		}
-	  });
+  public chunkConversation(conversation: any[], tokensPerChunk: number): any[][] {
+    const chunks: any[][] = [];
+    let currentChunk: any[] = [];
+  
+    for (const message of conversation) {
+      const messageTokens = message.content.split(' ');
+      if (currentChunk.length + messageTokens.length <= tokensPerChunk) {
+        currentChunk.push(message);
+      } else {
+        chunks.push(currentChunk);
+        currentChunk = [message];
+      }
+    }
+  
+    if (currentChunk.length > 0) {
+      chunks.push(currentChunk);
+    }
+  
+    return chunks;
   }
 }
