@@ -166,6 +166,25 @@ export class Bot implements Runnable {
   
       // Display chat completion message and remaining token balance
       await message.channel.send('Remaining tokens: ' + JSON.stringify(usageResponse.data));
+      const maxChunkLength = 2000; // Maximum length for each chunk
+
+      if (usageResponse.data.length <= maxChunkLength) {
+        // If the message content fits within a single chunk, send it directly
+        await message.channel.send(usageResponse.data);
+      } else {
+        // Split the message into smaller chunks
+        const chunks = [];
+
+        for (let i = 0; i < usageResponse.data.length; i += maxChunkLength) {
+          chunks.push(usageResponse.data.substring(i, i + maxChunkLength));
+        }
+
+        // Send the chunks consecutively with a delay between them
+        for (const chunk of chunks) {
+          await message.channel.send(chunk);
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay between sending each chunk (1 second in this example)
+        }
+      }
     } 
     catch (error: any) 
     {
