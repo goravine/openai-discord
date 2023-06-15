@@ -155,7 +155,6 @@ export class Bot implements Runnable {
   }
 
   public async checkRemainingBalance(message: any) {
-    const channelId = message.channel.id;
     try {
       // Retrieve token usage information
       const todayDateTime = this.getTodayDateTime();
@@ -166,7 +165,7 @@ export class Bot implements Runnable {
       });
   
       // Display chat completion message and remaining token balance
-      await message.channel.send('Remaining tokens: ' + JSON.stringify(usageResponse));
+      await message.channel.send('Remaining tokens: ' + JSON.stringify(usageResponse.data));
     } 
     catch (error: any) 
     {
@@ -179,8 +178,10 @@ export class Bot implements Runnable {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-  
-    return `${year}-${month}-${day}`;
+
+    const utcDate = new Date(Date.UTC(year, month - 1, day));
+
+    return `${utcDate.getFullYear()}-${utcDate.getMonth() + 1}-${utcDate.getDate()}`;
   }
 
   public async openAIConversation(message : any)
