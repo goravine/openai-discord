@@ -8,6 +8,7 @@ import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
 import axios , {AxiosError } from 'axios';
 
+
 export class Bot implements Runnable {
 	// Define a conversation ID map
 	public conversationHistory = new Map<string, Array<{ role: string, content: string }>>();
@@ -164,27 +165,19 @@ export class Bot implements Runnable {
         },
       });
   
-      // Display chat completion message and remaining token balance
-      //await message.channel.send('Remaining tokens: ' + JSON.stringify(usageResponse.data));
-      const maxChunkLength = 1500; // Maximum length for each chunk
+      const snapshotSum: { [snapshotId: string]: number } = {};
 
-      if (usageResponse.data.length <= maxChunkLength) {
-        // If the message content fits within a single chunk, send it directly
-        await message.channel.send(usageResponse.data);
-      } else {
-        // Split the message into smaller chunks
-        const chunks = [];
-
-        for (let i = 0; i < usageResponse.data.length; i += maxChunkLength) {
-          chunks.push(usageResponse.data.substring(i, i + maxChunkLength));
-        }
-
-        // Send the chunks consecutively with a delay between them
-        for (const chunk of chunks) {
-          await message.channel.send(chunk);
-          await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay between sending each chunk (1 second in this example)
+      for (const entry of usageResponse.data) {
+        const { snapshot_id, n_generated_tokens_total } = entry;
+        if (snapshotSum.hasOwnProperty(snapshot_id)) {
+          snapshotSum[snapshot_id] += n_generated_tokens_total;
+        } else {
+          snapshotSum[snapshot_id] = n_generated_tokens_total;
         }
       }
+      // Display chat completion message and remaining token balance
+      await message.channel.send('Data usage for '+ todayDateTime +': ' + JSON.stringify(snapshotSum));
+      await message.channel.send(`Current usage USD: ${usageResponse.current_usage_usd}`);
     } 
     catch (error: any) 
     {
