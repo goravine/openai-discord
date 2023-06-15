@@ -51,6 +51,7 @@ export class Bot implements Runnable {
         IntentsBitField.Flags.GuildMessages,
         IntentsBitField.Flags.MessageContent,
         IntentsBitField.Flags.DirectMessages,
+        IntentsBitField.Flags.VoiceClient,
       ],
       partials: [
         Partials.Channel, // For DMs
