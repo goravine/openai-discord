@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, Presence
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -55,7 +55,6 @@ export class Bot implements Runnable {
         Partials.Channel, // For DMs
       ],
     });
-
   }
 
   /**
@@ -87,7 +86,7 @@ export class Bot implements Runnable {
      */
     this._client.login(process.env.DISCORD_API_KEY).then(() => {
       this._logger.logService.info('Discord Client has been initialized successfully.'); // Log service initialization
-    }).catch((error : any) => {
+    }).catch((error) => {
       this._logger.logService.error(`Failed to start Discord Service: ${error}`); // Log service initialization error
       process.exit(1); // Exit process
     });
@@ -124,10 +123,9 @@ export class Bot implements Runnable {
       this._client.user?.setActivity({
         name: '/help',
         type: ActivityType.Listening,
-      });
-    });*/
-    // Set presence using setPresence() method with null check
-    this._client.user?.setActivity({name: 'VALORANT', type: ActivityType.Playing });
+      });*/
+      this._client.user?.setActivity({name: 'VALORANT', type: ActivityType.Playing });
+    });
 
     /**
      *  On interaction create event handler
