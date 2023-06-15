@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, VoiceClient,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -8,6 +8,7 @@ import { AI } from '@/models/ai';
 import { commands } from '@/bot/commands';
 import axios , {AxiosError } from 'axios';
 import ytdl from 'ytdl-core';
+import { VoiceClient } from 'discord.js';
 
 export class Bot implements Runnable {
 	// Define a conversation ID map
@@ -51,7 +52,6 @@ export class Bot implements Runnable {
         IntentsBitField.Flags.GuildMessages,
         IntentsBitField.Flags.MessageContent,
         IntentsBitField.Flags.DirectMessages,
-        IntentsBitField.Flags.VoiceClient,
       ],
       partials: [
         Partials.Channel, // For DMs
@@ -253,20 +253,20 @@ export class Bot implements Runnable {
       }
   
       try {
-        const voiceClient = <VoiceClient>(this._client);
+        const voiceClient = new VoiceClient(this._client);
         await voiceClient.join(voiceChannel);
         const stream = ytdl(args[1], { filter: 'audioonly' });
         const dispatcher = voiceClient.play(stream);
-  
+
         dispatcher.on('start', () => {
           message.reply('Playing the song...');
         });
-  
+
         dispatcher.on('finish', () => {
           message.reply('Song finished.');
           voiceClient.disconnect();
         });
-  
+
         dispatcher.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
