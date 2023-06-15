@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, joinVoiceChannel,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, voiceChannel,
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -252,7 +252,7 @@ export class Bot implements Runnable {
       }
   
       try {
-        const connection = await joinVoiceChannel(voiceChannel);
+        const connection = await voiceChannel.join();
         if (!connection) {
           message.reply('Failed to join the voice channel.');
           return;
