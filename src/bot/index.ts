@@ -237,23 +237,27 @@ export class Bot implements Runnable {
     return chunks;
   }
 
-  public async playMusic(message: any)
-  {
-    if (message.content.startsWith('/play')) {
-      const args = message.content.split(' ');
+  public async playMusic(message: any) {
+    if (message.startsWith('/play')) {
+      const args = message.split(' ');
       if (args.length < 2) {
         message.reply('Please provide a YouTube URL.');
         return;
       }
-      
+  
       const voiceChannel = message.member?.voice.channel;
       if (!voiceChannel) {
-        message.content.reply('You must be in a voice channel to use this command.');
+        message.reply('You must be in a voice channel to use this command.');
         return;
       }
-      
+  
       try {
         const connection = await voiceChannel.join();
+        if (!connection) {
+          message.reply('Failed to join the voice channel.');
+          return;
+        }
+  
         const stream = ytdl(args[1], { filter: 'audioonly' });
         const dispatcher = connection.play(stream);
   
@@ -266,7 +270,7 @@ export class Bot implements Runnable {
           voiceChannel.leave();
         });
   
-        dispatcher.on('error', (error : any) => {
+        dispatcher.on('error', (error: any) => {
           console.error(error);
           message.reply('An error occurred while playing the song.');
           voiceChannel.leave();
@@ -277,4 +281,5 @@ export class Bot implements Runnable {
       }
     }
   }
+  
 }
