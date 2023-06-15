@@ -163,7 +163,6 @@ export class Bot implements Runnable {
         console.log("MAX TOKEN : " + maxToken);
         try {
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
-          let responseContent = '';
   
           for (const chunk of conversationChunks) {
             const response = await axios.post(
@@ -185,10 +184,11 @@ export class Bot implements Runnable {
               }
             );
   
-            responseContent += response.data.choices[0].message.content;
-          }
+            const responseContent = response.data.choices[0].message.content;
+            conversation.push({ role: 'system', content: responseContent });
   
-          conversation.push({ role: 'system', content: responseContent });
+            await message.channel.send(`${message.author.toString()} ${responseContent}`);
+          }
   
           // Limit the conversation length
           if (conversation.length > 10) {
@@ -198,7 +198,6 @@ export class Bot implements Runnable {
   
           this.conversationHistory.set(channelId, conversation);
   
-          await message.channel.send(`${message.author.toString()} ${responseContent}`);
           thinkingMessage.delete();
         } catch (error: any) {
           message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
@@ -209,6 +208,7 @@ export class Bot implements Runnable {
       }
     }
   });
+  
   }
 
   public chunkConversation(conversation: any[], tokensPerChunk: number): any[][] {
