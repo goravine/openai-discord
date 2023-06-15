@@ -158,19 +158,29 @@ export class Bot implements Runnable {
     const channelId = message.channel.id;
     try {
       // Retrieve token usage information
-      const usageResponse = await axios.get('https://api.openai.com/v1/usage', {
+      const todayDateTime = this.getTodayDateTime();
+      const usageResponse = await axios.get('https://api.openai.com/v1/usage?date='+todayDateTime, {
         headers: {
           'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         },
       });
   
-      const { total_tokens, usage } = usageResponse.data;
-  
       // Display chat completion message and remaining token balance
-      await message.channel.send(`Remaining tokens: ${total_tokens - usage}`);
-    } catch (error: any) {
+      await message.channel.send(`Remaining tokens: ` + JSON.stringify(usageResponse, null, 2));
+    } 
+    catch (error: any) 
+    {
       message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
     }
+  }
+
+  public getTodayDateTime() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+  
+    return `${year}-${month}-${day}`;
   }
 
   public async openAIConversation(message : any)
