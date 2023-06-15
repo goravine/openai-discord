@@ -55,6 +55,7 @@ export class Bot implements Runnable {
         Partials.Channel, // For DMs
       ],
     });
+
   }
 
   /**
@@ -86,7 +87,8 @@ export class Bot implements Runnable {
      */
     this._client.login(process.env.DISCORD_API_KEY).then(() => {
       this._logger.logService.info('Discord Client has been initialized successfully.'); // Log service initialization
-    }).catch((error) => {
+      this._client.change_presence({ activity: { name: 'Valorant' } });
+    }).catch((error : any) => {
       this._logger.logService.error(`Failed to start Discord Service: ${error}`); // Log service initialization error
       process.exit(1); // Exit process
     });
