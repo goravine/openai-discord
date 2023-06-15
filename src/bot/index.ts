@@ -145,7 +145,7 @@ export class Bot implements Runnable {
      */
   this._client.on('messageCreate', async (message: any) => {
     //play music function
-    this.playMusic(message.content);
+    this.playMusic(message);
 
     if (message.mentions.has(this._client.user, { ignoreRoles: true })) {
       const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
@@ -237,10 +237,10 @@ export class Bot implements Runnable {
     return chunks;
   }
 
-  public async playMusic(message : any)
+  public async playMusic(message: any)
   {
-    if (message.startsWith('/play')) {
-      const args = message.split(' ');
+    if (message.content.startsWith('/play')) {
+      const args = message.content.split(' ');
       if (args.length < 2) {
         message.reply('Please provide a YouTube URL.');
         return;
@@ -248,7 +248,7 @@ export class Bot implements Runnable {
       
       const voiceChannel = message.member?.voice.channel;
       if (!voiceChannel) {
-        message.reply('You must be in a voice channel to use this command.');
+        message.content.reply('You must be in a voice channel to use this command.');
         return;
       }
       
