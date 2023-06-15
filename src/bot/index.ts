@@ -159,12 +159,14 @@ export class Bot implements Runnable {
         const thinkingMessage = await message.channel.send('Thinking...');
         const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
         const tokensPerChunk = 100; // Adjust as needed
-        
+  
         console.log("MAX TOKEN : " + maxToken);
         try {
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
-  
-          for (const chunk of conversationChunks) {
+          let allResponse = '';
+          var responseMessage = null;
+          for (let i = 0; i < conversationChunks.length; i++) {
+            const chunk = conversationChunks[i];
             const response = await axios.post(
               'https://api.openai.com/v1/chat/completions',
               {
@@ -185,10 +187,22 @@ export class Bot implements Runnable {
             );
   
             const responseContent = response.data.choices[0].message.content;
-            conversation.push({ role: 'system', content: responseContent });
+            allResponse += responseContent;
   
-            await message.channel.send(`${message.author.toString()} ${responseContent}`);
+            // Delay between sending each response
+            setTimeout(async () => {
+              if (i === 0) {
+                thinkingMessage.delete();
+              } 
+              else 
+              {
+                responseMessage.delete();
+              }
+              responseMessage = await message.channel.send(`${message.author.toString()} ${allResponse}`);
+            }, i * 50); // Adjust the delay as needed
           }
+  
+          conversation.push({ role: 'system', content: allResponse });
   
           // Limit the conversation length
           if (conversation.length > 10) {
@@ -197,8 +211,6 @@ export class Bot implements Runnable {
           }
   
           this.conversationHistory.set(channelId, conversation);
-  
-          thinkingMessage.delete();
         } catch (error: any) {
           message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
           thinkingMessage.delete();
@@ -208,6 +220,7 @@ export class Bot implements Runnable {
       }
     }
   });
+  
   
   }
 
