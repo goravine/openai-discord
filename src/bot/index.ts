@@ -1,5 +1,5 @@
 import {
-  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes,
+  ActivityType, Client, CommandInteraction, IntentsBitField, Interaction, Partials, REST, Routes, Presence
 } from 'discord.js';
 import process from 'process';
 import { Logger } from '@/logger';
@@ -87,7 +87,9 @@ export class Bot implements Runnable {
      */
     this._client.login(process.env.DISCORD_API_KEY).then(() => {
       this._logger.logService.info('Discord Client has been initialized successfully.'); // Log service initialization
-      this._client.change_presence({ activity: { name: 'Valorant' } });
+      // Set presence using Presence class
+      const presence = new Presence(this._client);
+      presence.setActivity({ name: 'Valorant', type: 'PLAYING' });
     }).catch((error : any) => {
       this._logger.logService.error(`Failed to start Discord Service: ${error}`); // Log service initialization error
       process.exit(1); // Exit process
