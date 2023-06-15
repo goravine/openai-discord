@@ -11,6 +11,7 @@ ENV OPENAI_ORGANIZATION_ID=$OPENAI_ORGANIZATION_ID
 ENV OPENAI_API_KEY=$OPENAI_API_KEY
 ENV MODEL_NAME=$MODEL_NAME
 
+RUN npm install ytdl-core
 COPY yarn.lock ./
 COPY package*.json ./
 COPY tsconfig*.json ./
