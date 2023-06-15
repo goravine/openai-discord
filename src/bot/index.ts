@@ -252,7 +252,7 @@ export class Bot implements Runnable {
       }
   
       try {
-        const connection = await voiceChannel.join();
+        const connection = await voiceChannel.connect();
         if (!connection) {
           message.reply('Failed to join the voice channel.');
           return;
