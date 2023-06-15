@@ -166,27 +166,8 @@ export class Bot implements Runnable {
   
       const { total_tokens, usage } = usageResponse.data;
   
-      // Make a chat completion request
-      const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          model: process.env.MODEL_NAME,
-          temperature: 0.5,
-          frequency_penalty: 0.6,
-          presence_penalty: 0.4,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-            'Content-Type': 'application/json',
-            'Conversation-ID': channelId,
-          },
-        }
-      );
-  
       // Display chat completion message and remaining token balance
       await message.channel.send(`Remaining tokens: ${total_tokens - usage}`);
-      await message.channel.send(response.data.choices[0].message.content);
     } catch (error: any) {
       message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
     }
