@@ -127,7 +127,7 @@ export class Bot implements Runnable {
       });
     });*/
     // Set presence using setPresence() method with null check
-    this._client.user?.setActivity('VALORANT', { type: ActivityType.Playing });
+    this._client.user?.setActivity({name: 'VALORANT', type: ActivityType.Playing });
 
     /**
      *  On interaction create event handler
