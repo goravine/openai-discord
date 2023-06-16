@@ -182,7 +182,7 @@ export class Bot implements Runnable {
   
       // Display chat completion message and remaining token balance
       thinkingMessage.delete();
-      let messageText = 'Data usage for ' + todayDateTime + '\r\n';
+      let messageText = 'Data usage for ' + todayDateTime + '\r\n=============================\r\n';
       
       for (const key in snapshotSum) {
         if (snapshotSum.hasOwnProperty(key)) {
