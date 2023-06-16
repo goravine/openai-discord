@@ -186,13 +186,13 @@ export class Bot implements Runnable {
       
       for (const key in snapshotSum) {
         if (snapshotSum.hasOwnProperty(key)) {
-          messageText += `Model Name ${key}: ${snapshotSum[key]} Token\r\n`;
+          messageText += `Model Name '${key}': ${snapshotSum[key]} Tokens\r\n`;
         }
       }
   
       await message.channel.send(messageText);
       
-      await message.channel.send(`Current usage USD: $.${usageResponse.data.current_usage_usd}`);
+      await message.channel.send(`Current usage USD: $ ${usageResponse.data.current_usage_usd}`);
     } catch (error: any) {
       message.channel.send(
         `ERROR: Failed to get chat completion: ${(error as AxiosError).message}`
