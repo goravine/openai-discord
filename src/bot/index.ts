@@ -157,16 +157,20 @@ export class Bot implements Runnable {
 
   public async checkRemainingBalance(message: any) {
     try {
+      const thinkingMessage = await message.channel.send('Querying...');
       // Retrieve token usage information
       const todayDateTime = this.getTodayDateTime();
-      const usageResponse = await axios.get('https://api.openai.com/v1/usage?date=' + todayDateTime, {
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
-      });
-    
+      const usageResponse = await axios.get(
+        'https://api.openai.com/v1/usage?date=' + todayDateTime,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          },
+        }
+      );
+  
       const snapshotSum: { [snapshotId: string]: number } = {};
-    
+  
       for (const entry of usageResponse.data.data) {
         const { snapshot_id, n_generated_tokens_total } = entry;
         if (snapshotSum.hasOwnProperty(snapshot_id)) {
@@ -175,12 +179,24 @@ export class Bot implements Runnable {
           snapshotSum[snapshot_id] = n_generated_tokens_total;
         }
       }
-    
+  
       // Display chat completion message and remaining token balance
-      await message.channel.send('Data usage for ' + todayDateTime + ': ' + JSON.stringify(snapshotSum));
-      await message.channel.send(`Current usage USD: ${usageResponse.data.current_usage_usd}`);
+      thinkingMessage.delete();
+      let messageText = 'Data usage for ' + todayDateTime + '\r\n';
+      
+      for (const key in snapshotSum) {
+        if (snapshotSum.hasOwnProperty(key)) {
+          messageText += `Model Name ${key}: ${snapshotSum[key]} Token\r\n`;
+        }
+      }
+  
+      await message.channel.send(messageText);
+      
+      await message.channel.send(`Current usage USD: $.${usageResponse.data.current_usage_usd}`);
     } catch (error: any) {
-      message.channel.send(`ERROR: Failed to get chat completion: ${(error as AxiosError).message}`);
+      message.channel.send(
+        `ERROR: Failed to get chat completion: ${(error as AxiosError).message}`
+       );
     }
   }
 
