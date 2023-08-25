@@ -239,7 +239,7 @@ export class Bot implements Runnable {
               {
                 model: process.env.MODEL_NAME,
                 messages: chunk,
-                max_tokens: maxToken - chunk.length,
+                max_tokens: maxToken,
                 temperature: 0.5,
                 frequency_penalty: 0.6,
                 presence_penalty: 0.4,
