@@ -235,7 +235,7 @@ export class Bot implements Runnable {
 
           for (const chunk of conversationChunks) {
             i++;
-            console.log("Requesting ["+i+"/"+conversationChunks.length+"]")
+            console.log(`Requesting [${i}/${conversationChunks.length}]`);
             const response = await axios.post(
               'https://api.openai.com/v1/chat/completions',
               {
@@ -262,13 +262,19 @@ export class Bot implements Runnable {
             } 
             else 
             {
-              // Truncate the response content to fit within the limit
-              const remainingSpace = maxLength - allResponse.length;
-              const truncatedResponse = responseContent.substring(0, remainingSpace);
-              allResponse += truncatedResponse;
-              remainingResponse = responseContent.substring(remainingSpace); // Store remaining content
+              if (!truncated)
+              {
+                // Truncate the response content to fit within the limit
+                const remainingSpace = maxLength - allResponse.length;
+                const truncatedResponse = responseContent.substring(0, remainingSpace);
+                allResponse += truncatedResponse;
+                remainingResponse = responseContent.substring(remainingSpace); // Store remaining content
+              }
+              else
+              {
+                remainingResponse += responseContent;
+              }
               truncated = true;
-              break; // Stop processing further chunks
             }
           }
 
