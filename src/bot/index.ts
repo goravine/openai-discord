@@ -214,25 +214,20 @@ export class Bot implements Runnable {
   public async openAIConversation(message : any)
   {
     const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
+    let maxConversationLength = 20;
       if (messageContent) {
         const channelId = message.channel.id;
-        let conversation = this.conversationHistory.get(channelId);
-        if (!conversation) {
-          conversation = [{ role: 'user', content: messageContent }];
-          this.conversationHistory.set(channelId, conversation);
-        } else {
-          conversation.push({ role: 'user', content: messageContent });
-          this.conversationHistory.set(channelId, conversation);
-        }
-  
+        let conversation = this.conversationHistory.get(channelId) || [];
+        conversation.push({ role: 'user', content: messageContent });
         const thinkingMessage = await message.channel.send('Thinking...');
-        const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
-        const tokensPerChunk = 1024; // Adjust as needed
-        
-        console.log("MAX TOKEN : " + maxToken);
+
         try {
+          const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
+          const tokensPerChunk = 1024; // Adjust as needed
+          console.log("MAX TOKEN : " + maxToken);
+
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
-          var allResponse = "";
+          let allResponse = "";
           for (const chunk of conversationChunks) {
             const response = await axios.post(
               'https://api.openai.com/v1/chat/completions',
@@ -261,9 +256,8 @@ export class Bot implements Runnable {
           await message.channel.send(`${message.author.toString()} ${allResponse}`);
   
           // Limit the conversation length
-          if (conversation.length > 10) {
-            conversation.shift(); // Remove the oldest message
-            conversation.shift(); // Remove the oldest message
+          if (conversation.length > maxConversationLength) {
+            conversation.shift();
           }
   
           this.conversationHistory.set(channelId, conversation);
