@@ -228,11 +228,12 @@ export class Bot implements Runnable {
         const thinkingMessage = await message.channel.send('Thinking...');
         const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
         const tokensPerChunk = 1024; // Adjust as needed
-        
-        console.log("MAX TOKEN : " + maxToken);
+        var i = 0;
         try {
+          i++;
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
           var allResponse = "";
+          console.log("Batch ["+ i +"] MAX TOKEN : " + maxToken + "allResponse Length : " + allResponse.length);
           for (const chunk of conversationChunks) {
             const response = await axios.post(
               'https://api.openai.com/v1/chat/completions',
