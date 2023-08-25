@@ -228,7 +228,10 @@ export class Bot implements Runnable {
 
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
           let allResponse = "";
+          let i = 0;
           for (const chunk of conversationChunks) {
+            i++;
+            console.log("Requesting ["+i+"/"+conversationChunks.length+"]")
             const response = await axios.post(
               'https://api.openai.com/v1/chat/completions',
               {
