@@ -222,11 +222,8 @@ export class Bot implements Runnable {
         const thinkingMessage = await message.channel.send('Thinking...');
 
         try {
-          // Logging conversation before processing
-          console.log('Conversation before processing:', conversation);
-
           const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
-          const tokensPerChunk = maxToken; // Adjust as needed
+          const tokensPerChunk = 512; // Adjust as needed
           console.log("MAX TOKEN : " + maxToken);
 
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
