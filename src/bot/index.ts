@@ -228,7 +228,10 @@ export class Bot implements Runnable {
 
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
           let allResponse = "";
+          let remainingResponse = ""; // To store any remaining content
+          let truncated = false; // To track if the content was truncated
           let i = 0;
+          let maxLength = 1800;
           for (const chunk of conversationChunks) {
             i++;
             console.log("Requesting ["+i+"/"+conversationChunks.length+"]")
@@ -252,11 +255,35 @@ export class Bot implements Runnable {
             );
   
             const responseContent = response.data.choices[0].message.content;
-            allResponse += responseContent;
+            if (!truncated && allResponse.length + responseContent.length <= maxLength) 
+            {
+              allResponse += responseContent;
+            } 
+            else 
+            {
+              // Truncate the response content to fit within the limit
+              const remainingSpace = maxLength - allResponse.length;
+              const truncatedResponse = responseContent.substring(0, remainingSpace);
+              allResponse += truncatedResponse;
+              remainingResponse = responseContent.substring(remainingSpace); // Store remaining content
+              truncated = true;
+              break; // Stop processing further chunks
+            }
           }
 
-          conversation.push({ role: 'system', content: allResponse });
+          let allMessage = "";
           await message.channel.send(`${message.author.toString()} ${allResponse}`);
+          allMessage += allResponse;
+          // If there's remaining content, split and send it in multiple follow-up messages
+          while (remainingResponse.length > 0) 
+          {
+            const chunkToSend = remainingResponse.substring(0, maxLength); // Get the next chunk
+            await message.channel.send(chunkToSend);
+            allMessage += chunkToSend;
+            remainingResponse = remainingResponse.substring(maxLength); // Remove the sent chunk
+          }
+
+          conversation.push({ role: 'system', content: allMessage });
   
           // Limit the conversation length
           if (conversation.length > maxConversationLength) {
@@ -266,7 +293,8 @@ export class Bot implements Runnable {
           this.conversationHistory.set(channelId, conversation);
   
           thinkingMessage.delete();
-        } catch (error: any) {
+        } catch (error: any) 
+        {
           let errorMessage = `ERROR: Failed to get chat completion: ${(error as AxiosError).message}`;
           message.channel.send(errorMessage);
             try
