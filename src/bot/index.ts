@@ -252,9 +252,6 @@ export class Bot implements Runnable {
             );
   
             const responseContent = response.data.choices[0].message.content;
-            
-            // Logging conversation before processing
-            console.log('chunk reply :', responseContent);
             allResponse += responseContent;
           }
 
