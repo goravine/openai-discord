@@ -231,7 +231,7 @@ export class Bot implements Runnable {
           let remainingResponse = ""; // To store any remaining content
           let truncated = false; // To track if the content was truncated
           let i = 0;
-          let maxLength = 1800;
+          let maxLength = process.env.DISCORD_MAX_LENGTH;
           for (const chunk of conversationChunks) {
             i++;
             console.log("Requesting ["+i+"/"+conversationChunks.length+"]")
