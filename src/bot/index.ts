@@ -267,7 +267,9 @@ export class Bot implements Runnable {
   
           thinkingMessage.delete();
         } catch (error: any) {
-          const errorMessage = `ERROR: Failed to get chat completion: ${JSON.stringify(error.response.data, null, 2)}`;
+          let errorMessage = `ERROR: Failed to get chat completion: ${(error as AxiosError).message}`;
+          message.channel.send(errorMessage);
+          errorMessage = `ERROR: Failed to get chat completion: ${JSON.stringify(error.response.data, null, 2)}`;
           message.channel.send(errorMessage);
           thinkingMessage.delete();
         }
