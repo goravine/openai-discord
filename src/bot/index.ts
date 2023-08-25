@@ -214,7 +214,7 @@ export class Bot implements Runnable {
   public async openAIConversation(message : any)
   {
     const messageContent = message.content.replace(/<@!?\d+>/, '').trim();
-    let maxConversationLength = 20;
+    let maxConversationLength = 10;
       if (messageContent) {
         const channelId = message.channel.id;
         let conversation = this.conversationHistory.get(channelId) || [];
@@ -223,7 +223,7 @@ export class Bot implements Runnable {
 
         try {
           const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
-          const tokensPerChunk = 64; // Adjust as needed
+          const tokensPerChunk = 1024; // Adjust as needed
           console.log("MAX TOKEN : " + maxToken);
 
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
