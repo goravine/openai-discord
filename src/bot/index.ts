@@ -219,11 +219,11 @@ export class Bot implements Runnable {
         const channelId = message.channel.id;
         let conversation = this.conversationHistory.get(channelId) || [];
         conversation.push({ role: 'user', content: messageContent });
-        const thinkingMessage = await message.channel.send('Thinking...');
+        let thinkingMessage = await message.channel.send('Thinking...');
 
         try {
           const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
-          const tokensPerChunk = 512; // Adjust as needed
+          const tokensPerChunk = 64; // Adjust as needed
           console.log("MAX TOKEN : " + maxToken);
 
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
@@ -235,7 +235,9 @@ export class Bot implements Runnable {
 
           for (const chunk of conversationChunks) {
             i++;
-            console.log(`Requesting [${i}/${conversationChunks.length}]`);
+            console.log();
+            thinkingMessage.delete();
+            thinkingMessage = await message.channel.send(`Requesting [${i}/${conversationChunks.length}]`);
             const response = await axios.post(
               'https://api.openai.com/v1/chat/completions',
               {
