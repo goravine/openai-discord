@@ -226,7 +226,7 @@ export class Bot implements Runnable {
           console.log('Conversation before processing:', conversation);
 
           const maxToken = parseInt(process.env.MAX_TOKEN ?? '1024');
-          const tokensPerChunk = 1024; // Adjust as needed
+          const tokensPerChunk = maxToken; // Adjust as needed
           console.log("MAX TOKEN : " + maxToken);
 
           const conversationChunks = this.chunkConversation(conversation, tokensPerChunk);
