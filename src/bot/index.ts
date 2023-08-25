@@ -270,9 +270,10 @@ export class Bot implements Runnable {
   
           thinkingMessage.delete();
         } catch (error: any) {
-          message.channel.send(`ERROR: Failed to get chat completion: ${JSON.stringify(error, null, 2)}`);
+          const errorMessage = `ERROR: Failed to get chat completion: ${JSON.stringify(error.response.data, null, 2)}`;
+          message.channel.send(errorMessage);
           thinkingMessage.delete();
-      }
+        }
       } else {
         message.channel.send("ERROR: No message content provided.");
       }
