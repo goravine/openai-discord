@@ -1,61 +1,308 @@
-<h1 align="center">Chat GPT Discord Bot</h1>
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a name="readme-top"></a>
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
 
-<div align="center">
-    <a href="https://github.com/iTzArshia/GPT-Discord-Bot/stargazers"> <img src="https://img.shields.io/github/stars/iTzArshia/GPT-Discord-Bot.svg" alt="GitHub stars"/> </a>
-    <a href="https://github.com/iTzArshia/GPT-Discord-Bot/network"> <img src="https://img.shields.io/github/forks/iTzArshia/GPT-Discord-Bot.svg" alt="GitHub forks"/> </a>
-    <a href="https://discord.gg/nKrBshQvcK"> <img src="https://badgen.net/discord/members/nKrBshQvcK" alt="iTz Development Discord"/> </a>
-    <a href="https://discord.gg/8hr9CRqmfc"> <img src="https://badgen.net/discord/members/8hr9CRqmfc" alt="iTz Club Discord"/> </a>
+
+
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+<div align="center" markdown="1">
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
 </div>
 
-GPT Discord Bot is the original Discord AI bot written in **[JavaScript](https://www.javascript.com/)**, using the **[Discord.js V14](discord.js.org/)** library powered by [OpenAI](https://openai.com/)'s models. It has different features such as answering all of your questions or drawing your imagination and even translating your prompts from any language to any other language you want and also has a configurable Auto Moderation system powered by AI which watches all of your server messages (if you want, you can turn it off/on) and report flagged messages to Admins and they can moderate it and other features which you can see example in **[Screenshots](https://github.com/iTzArshia/GPT-Discord-Bot#-screenshots)**!
-## 🚧 Requirements
-1. Discord Bot Token **[Guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)**  
-   1.1. Enable "Message Content Intent" and "Server Members Intent" in Discord Developer Portal
-2. OpenAI API Key
-3. **[Node.js 16.9.0](https://nodejs.org/en/download/)** or higher
-# 🚀 Getting Started
-## ⚙️ Configuration
-Go to `config.json` in the `configs` folder and fill out the values:
-```json
-{
-    "Prefix": "Put anything you want as a prefix",
-    "MainColor": "Put any #HexCode you want for embeds color",
-    "ErrorColor": "Put any #HexCode you want for embeds color when there is an error",
-    "ClientID": "Put your Bot ID/Client ID here",
-    "Token": "Put your Bot Token here",
-    "OpenAIapiKey": "Put your Open AI API Key here"
-}
-```
-⚠️ **Note: Never commit or share your token publicly** ⚠️
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a>
+    <img src="https://i.imgur.com/aqhWIDI.png" alt="Logo" width="180" height="180">
+  </a>
 
-and if you want to use the chatbot or moderation model fill and config `chatbot.js` and `moderation.js` in the `configs` folder (Information on how to configure them is available in the files themselves)
-## 🧠 installation
-Open your terminal and install the required packages with
-```sh
-npm install
-```
-After installation finishes run `node register.js` to deploy slash commands and then run `node index.js` in the terminal to start the bot.
-## 💫 Features
+<h3 align="center">OpenAI Discord</h3>
+
+<div align="center">
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d6c618e969974283b69ba6cb9e16bbd5)](https://app.codacy.com/gh/KrozT/openai-discord/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
+</div>
+
+  <p align="center">
+A simple Discord bot integrating OpenAI libraries for ChatGPT and DALL-E, capable of generating text and images in Discord conversations.    <br />
+    <a href="https://github.com/KrozT/openai-discord"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://discord.com/oauth2/authorize?client_id=1084340374010593311&permissions=534723950656&scope=bot">View Demo</a>
+    ·
+    <a href="https://github.com/KrozT/openai-discord/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/KrozT/openai-discord/pulls">Request Feature</a>
+  </p>
+</div>
+
+
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#screenshots">Screenshots</a></li>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+      <ul>
+        <li><a href="#packages">Packages</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#usage">Usage</a>
+      <ul>
+        <li><a href="#commands">Commands</a></li>
+        <li><a href="#options">Options</a></li>
+        <li><a href="#embeds">Embeds</a></li>
+      </ul>
+    </li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+Formerly known as 'Aurora AI', Aurora AI is a Discord chatbot that utilizes the GPT-3.5-Turbo language model by OpenAI. Built with discord.js, it generates responses to user input in a conversational format. Designed for simplicity, it's a great tool to explore the capabilities of GPT-3.5-Turbo within Discord. Additionally, it also supports the use of DALL-E, the image generation model also developed by OpenAI, allowing it to generate creative images alongside its natural language abilities.
+
+### Screenshots
+<details>
+
+<summary>Images</summary>
+
+[![Aurora AI ScreenShot 1][product-screenshot-1]](https://github.com/KrozT/openai-discord)
+[![Aurora AI ScreenShot 2][product-screenshot-2]](https://github.com/KrozT/openai-discord)
+
+
+</details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+### Built With
+
+* [![TypeScript][TypeScript-shield]][TypeScript-url]
+
+### Packages
+- [discord.js](https://github.com/discordjs/discord.js)
+- [winston](https://github.com/winstonjs/winston)
+- [openai-node](https://github.com/openai/openai-node)
+- [dotenv](https://github.com/motdotla/dotenv)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+### Installation
+
+1. Get a necessary API Keys
+   - [OpenAI](https://platform.openai.com/account/api-keys)
+   - [Discord](https://platform.openai.com/account/api-keys)
+   <br>
+
+2. Clone the repo
+   ```shell
+   git clone https://github.com/KrozT/openai-discord.git
+   ```
+3. Install packages
+   ```shell
+   yarn install
+   ```
+4. Add the API Keys to your environment variables
+   ```dotenv
+   DISCORD_API_KEY='YOUR DISCORD API KEY'
+   OPENAI_API_KEY='YOUR OPENAI API KEY'
+   ```
+5. Build project
+   ```shell
+   yarn run build
+   ```
+6. Start binaries
+   ```shell
+   yarn run start
+   ```
+
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+Once you have the project initialized
+just add the bot to your server and enjoy.
+
 ### Commands
-`Ask` : Answers your questions with all GPT models (**GPT-3.5-Turbo** & **GPT-4.0**)! 
+| Command  | Options                                | Type                             | Description                           |
+|----------|----------------------------------------|----------------------------------|---------------------------------------|
+| `/ping`  | `ephimeral`                            | `embed-info`                     | Ping the bot to check if it is online |
+| `/about` | `ephimeral`                            | `embed-info`                     | Get information about the bot         |
+| `/help`  | `ephimeral`                            | `embed-info`                     | Get a list of all the commands        |
+| `/chat`  | `question` `ephimeral`                 | `embed-request` `embed-response` | Chat with the bot                     |
+| `/clear` | None                                   | `embed-info`                     | Clear the chat history with the bot   |
+| `/image` | `prompt` `quantity` `size` `ephimeral` | `embed-request` `embed-response` | Generate an image with the bot        |
 
-`Imagine` : Draw your imaginations with **Dall∙E**!
+#### Options
+| Option      | Command                                   | Required | Default   | Choices                         | Description                         |
+|-------------|-------------------------------------------|----------|-----------|---------------------------------|-------------------------------------|
+| `question`  | `/chat`                                   | `true`   | None      | None                            | The question to ask the bot         |
+| `prompt`    | `/image`                                  | `true`   | None      | None                            | The text to generate the image from |
+| `quantity`  | `/image`                                  | `false`  | `1`       | `1` to `10`                     | Quantity of images to generate      |
+| `size`      | `/image`                                  | `false`  | `256x256` | `256x256` `512x512` `1024x1024` | Size of the image to generate       |
+| `ephimeral` | `/ping` `/about` `/help` `/chat` `/image` | `false`  | `false`   | `true` `false`                  | Hide the response from other users  |
 
-`Optimize` : Optimizes your imaginations to get a better response with the imagine command with **GPT-3.5-Turbo**!
 
-`Translate` : Translate your texts in any language to any language you want with **GPT-3.5-Turbo**.
-### Systems
-`ChatBot` : A Channel where you can talk to the bot and have ChatGPT-Style conversation with **GPT-3.5-Turbo**. (It has a temporary memory so that it can remember the contents for a short time)
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-`Auto-Moderation` : An Auto Mod system that checks all of  your server messages and sends a log for your Admins if a message content complies with OpenAI's usage policies with **Text-Moderation-Stable** (moderation model is free to use and you can config it as much as you want)
-## 📸 Screenshots
-![Ask](https://user-images.githubusercontent.com/89854127/218874201-c64068e8-708e-49ca-a322-bcb1e4a76646.png)
-![imagine](https://user-images.githubusercontent.com/89854127/218997350-d9a98021-33ad-4fed-b0bc-47306eebdd10.png)
-![Translate](https://user-images.githubusercontent.com/89854127/218874217-f472fa38-9918-46a3-a0e2-6a4cbfb4c370.png)
-![Conversation](https://user-images.githubusercontent.com/89854127/219849430-09bdbac5-2ffa-4759-9748-e33ec30c75f1.png)
-![Auto Mod](https://user-images.githubusercontent.com/89854127/218874203-c54283b2-410a-4ab6-a233-1dbbb5f42594.png)
-## ❤️ Donations
-You can **[support](https://reymit.ir/itz_arshia)** me by donating if you like the project!
-> Only available for Iranians :(
-#
-Made with ❤️ and JavaScript, Don't Forget to ⭐
+### Embeds
+The bot uses a variety of visual embeds code located in the footer of each message. The following table describes the embeds and their colors.
+
+| Footer           | Color | Description                                   |
+|------------------|-------|-----------------------------------------------|
+| `embed-info`     | Aqua  | System message by the bot                     |
+| `embed-error`    | Red   | Error message by the bot                      |
+| `embed-response` | Green | Response by the bot with AI-generated content |
+| `embed-request`  | Gold  | Request by the user                           |
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- ROADMAP -->
+## Roadmap
+
+- [x] Docker Integration
+  - [x] Dockerfile
+  - [x] Docker Compose
+- [x] Discord Integration
+  - [x] API REST
+  - [x] Slash Commands
+  - [x] Text Channels
+    - [x] Ephemeral (Optional)
+  - [x] Direct Messages
+    - [x] Ephemeral (Optional)
+- [x] Language Model Integration
+  - [x] GPT-3.5
+    - [x] Chat
+  - [ ] GPT-4
+- [x] DALL-E Integration
+  - [x] Image generation
+  - [ ] Image editing
+- [x] Context-based usability
+  - [x] Single user
+  - [ ] Multiple users
+
+See the [open issues](https://github.com/KrozT/openai-discord/issues) for a full list of proposed features (and known issues).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+* [Othneil Drew](https://github.com/othneildrew/)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/KrozT/openai-discord.svg?style=for-the-badge
+[contributors-url]: https://github.com/KrozT/openai-discord/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/KrozT/openai-discord.svg?style=for-the-badge
+[forks-url]: https://github.com/KrozT/openai-discord/network/members
+[stars-shield]: https://img.shields.io/github/stars/KrozT/openai-discord.svg?style=for-the-badge
+[stars-url]: https://github.com/KrozT/openai-discord/stargazers
+[issues-shield]: https://img.shields.io/github/issues/KrozT/openai-discord.svg?style=for-the-badge
+[issues-url]: https://github.com/KrozT/openai-discord/issues
+[license-shield]: https://img.shields.io/github/license/KrozT/openai-discord.svg?style=for-the-badge
+[license-url]: https://github.com/KrozT/openai-discord/blob/master/LICENSE
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://www.linkedin.com/in/matias-espinoza-bustos/
+[product-screenshot-1]: https://i.imgur.com/0FzqYbG.png
+[product-screenshot-2]: https://i.imgur.com/d5FmbGp.png
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
+[Vue-url]: https://vuejs.org/
+[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
+[Angular-url]: https://angular.io/
+[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
+[Svelte-url]: https://svelte.dev/
+[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
+[Laravel-url]: https://laravel.com
+[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
+[Bootstrap-url]: https://getbootstrap.com
+[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
+[JQuery-url]: https://jquery.com
+
+[TypeScript-url]: https://www.typescriptlang.org
+[TypeScript-shield]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
