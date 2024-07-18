@@ -168,9 +168,9 @@ export class Bot implements Runnable {
           },
         }
       );
-  
+      
       const snapshotSum: { [snapshotId: string]: number } = {};
-  
+      
       for (const entry of usageResponse.data.data) {
         const { snapshot_id, n_generated_tokens_total } = entry;
         if (snapshotSum.hasOwnProperty(snapshot_id)) {
@@ -179,18 +179,20 @@ export class Bot implements Runnable {
           snapshotSum[snapshot_id] = n_generated_tokens_total;
         }
       }
-  
+      
       // Display chat completion message and remaining token balance
       thinkingMessage.delete();
       let messageText = 'Data usage for ' + todayDateTime + '\r\n=============================\r\n';
       
       for (const key in snapshotSum) {
         if (snapshotSum.hasOwnProperty(key)) {
-          messageText += `Model Name '${key}': ${snapshotSum[key]} Tokens\r\n`;
+          const formattedUsage = snapshotSum[key].toFixed(4); // Format usage with four decimal places
+          messageText += `Model Name '${key}': ${formattedUsage} Tokens\r\n`;
         }
       }
-
-      messageText += `Today usage USD: $ ${usageResponse.data.current_usage_usd}`;
+      
+      const formattedCurrentUsage = usageResponse.data.current_usage_usd.toFixed(4); // Format current usage with four decimal places
+      messageText += `Today usage USD: $ ${formattedCurrentUsage}`;
   
       await message.channel.send(messageText);
     } catch (error: any) {
